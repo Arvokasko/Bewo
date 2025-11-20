@@ -7,12 +7,34 @@ import { router } from 'expo-router'
 import { doc, setDoc, getDocs, query, where, collection } from "firebase/firestore";
 import { Image } from 'react-native'
 
+
+// Images that where the users has chosen its own
+const pfpMap: Record<string, any> = {
+    pfp1: require("../../assets/images/profilePictures/pfp.png"),
+    pfp2: require("../../assets/images/profilePictures/pfp2.png"),
+    pfp3: require("../../assets/images/profilePictures/pfp3.png"),
+    pfp4: require("../../assets/images/profilePictures/pfp4.png"),
+    pfp5: require("../../assets/images/profilePictures/pfp5.png"),
+    pfp6: require("../../assets/images/profilePictures/pfp6.png"),
+    pfp7: require("../../assets/images/profilePictures/pfp7.png"),
+    pfp8: require("../../assets/images/profilePictures/pfp8.png"),
+    pfp9: require("../../assets/images/profilePictures/pfp9.png"),
+    pfp10: require("../../assets/images/profilePictures/pfp10.png"),
+    pfp11: require("../../assets/images/profilePictures/pfp11.png"),
+    pfp12: require("../../assets/images/profilePictures/pfp12.png"),
+    pfp13: require("../../assets/images/profilePictures/pfp13.png"),
+    pfp14: require("../../assets/images/profilePictures/pfp14.png"),
+    pfp15: require("../../assets/images/profilePictures/pfp15.png"),
+};
+
 export default function modifyAccount() {
     const [user, setUser] = useState<any>(null);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [currentPassword, setCurrentPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+
+    const currentPfp = pfpMap[user?.photoURL || "pfp1"];
 
     // declares the user auth
     useEffect(() => {
@@ -90,7 +112,7 @@ export default function modifyAccount() {
             <TouchableOpacity onPress={() => router.push('/modifyPfp')}>
                 <Image
                     style={{ width: 150, height: 150, borderRadius: 150 }}
-                    source={require("../../assets/images/profilePictures/pfp.png")}
+                    source={pfpMap[user?.photoURL || "pfp1"]} // userPfp if user hasnt changed it, default is pfp.png
                 />
             </TouchableOpacity>
 
