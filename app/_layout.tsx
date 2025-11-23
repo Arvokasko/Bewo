@@ -6,10 +6,23 @@ import { auth } from '@/FirebaseConfig';
 import { useColorScheme } from '@/components/useColorScheme';
 import { Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import 'react-native-get-random-values';
+import * as Notifications from "expo-notifications";
 
 export default function RootLayout() {
     const colorScheme = useColorScheme();
     const [user, setUser] = useState<User | null | undefined>(undefined);
+
+    // Configure notification handler
+    Notifications.setNotificationHandler({
+        handleNotification: async () => ({
+            shouldShowAlert: true,
+            shouldPlaySound: true,
+            shouldSetBadge: false,
+            shouldShowBanner: true, // ✅ new
+            shouldShowList: true,   // ✅ new
+        }),
+    });
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {

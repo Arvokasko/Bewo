@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native'
+import { View, TouchableOpacity, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { auth, db } from '../../FirebaseConfig'
@@ -6,6 +6,10 @@ import { updateProfile, onAuthStateChanged, updatePassword, verifyBeforeUpdateEm
 import { router } from 'expo-router'
 import { doc, setDoc, getDocs, query, where, collection } from "firebase/firestore";
 import { Image } from 'react-native'
+
+
+import { Text, TextInput, } from '@/components/Themed';
+
 
 
 // Images that where the users has chosen its own

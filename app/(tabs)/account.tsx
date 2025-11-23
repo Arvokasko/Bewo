@@ -1,14 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../FirebaseConfig';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'react-native';
 
+
+import { Text } from '@/components/Themed';
+
+
 export default function AccountScreen() {
 
-
+    // Images that where the users has chosen its own
+    const pfpMap: Record<string, any> = {
+        pfp1: require("../../assets/images/profilePictures/pfp.png"),
+        pfp2: require("../../assets/images/profilePictures/pfp2.png"),
+        pfp3: require("../../assets/images/profilePictures/pfp3.png"),
+        pfp4: require("../../assets/images/profilePictures/pfp4.png"),
+        pfp5: require("../../assets/images/profilePictures/pfp5.png"),
+        pfp6: require("../../assets/images/profilePictures/pfp6.png"),
+        pfp7: require("../../assets/images/profilePictures/pfp7.png"),
+        pfp8: require("../../assets/images/profilePictures/pfp8.png"),
+        pfp9: require("../../assets/images/profilePictures/pfp9.png"),
+        pfp10: require("../../assets/images/profilePictures/pfp10.png"),
+        pfp11: require("../../assets/images/profilePictures/pfp11.png"),
+        pfp12: require("../../assets/images/profilePictures/pfp12.png"),
+        pfp13: require("../../assets/images/profilePictures/pfp13.png"),
+        pfp14: require("../../assets/images/profilePictures/pfp14.png"),
+        pfp15: require("../../assets/images/profilePictures/pfp15.png"),
+    };
 
     const user = auth.currentUser;
 
@@ -32,7 +53,7 @@ export default function AccountScreen() {
             <View style={{ alignItems: 'center', flex: 1, top: 100 }}>
                 <Image
                     style={{ width: 150, height: 150, borderRadius: 150 }}
-                    source={require("../../assets/images/profilePictures/pfp.png")}
+                    source={pfpMap[user?.photoURL || "pfp1"]}
                 />
                 <Text style={styles.title}>{user?.displayName ?? '…'}</Text>
                 <Text>{user?.email ?? '…'}</Text>
