@@ -7,8 +7,9 @@ export default function NonTabsLayout() {
         <Stack
             screenOptions={{
                 headerShown: true,
+                headerTitle: "",
                 headerBackground: () => (
-                    <View style={{ flex: 1, backgroundColor: "transparent" }} />
+                    <View style={{ backgroundColor: "pink" }} />
                 ),
             }}
         />

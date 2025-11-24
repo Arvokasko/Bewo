@@ -1,4 +1,3 @@
-import { View, Text } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { TextInput } from 'react-native'
@@ -14,7 +13,9 @@ import { v4 as uuidv4 } from 'uuid';
 import { auth } from '../../FirebaseConfig'
 import { router } from 'expo-router'
 import UsernameSearch from '@/components/UsernameSearch'
-import NotificationTab from '@/components/NotificationTab'
+import { View } from 'react-native'
+
+import { Text } from '@/components/Themed'
 
 
 export default function createCard() {
@@ -23,6 +24,8 @@ export default function createCard() {
     const [selectedUsernames, setSelectedUsernames] = useState<string[]>([]);
 
     const [selectedUsers, setSelectedUsers] = useState<{ uid: string; username: string }[]>([]);
+
+    const [notificationData, setNotificationData] = useState("");
 
 
 
@@ -36,20 +39,20 @@ export default function createCard() {
 
 
 
-    // checkbox handling
-    const [selected, setSelected] = useState<{ [key: string]: boolean }>({
-        Mon: false,
-        Tue: false,
-        Wed: false,
-        Thu: false,
-        Fri: false,
-        Sat: false,
-        Sun: false,
-    });
+    // // checkbox handling
+    // const [selected, setSelected] = useState<{ [key: string]: boolean }>({
+    //     Mon: false,
+    //     Tue: false,
+    //     Wed: false,
+    //     Thu: false,
+    //     Fri: false,
+    //     Sat: false,
+    //     Sun: false,
+    // });
 
-    const toggleCheckbox = (key: string) => {
-        setSelected((prev) => ({ ...prev, [key]: !prev[key] }));
-    };
+    // const toggleCheckbox = (key: string) => {
+    //     setSelected((prev) => ({ ...prev, [key]: !prev[key] }));
+    // };
 
 
     const [checklist, setChecklist] = useState([{ label: "", checked: false }]);
@@ -98,7 +101,6 @@ export default function createCard() {
                 content,
                 checklist: filteredChecklist,
                 sharedUsers: selectedUsers.map(u => u.uid),
-                notifications: Object.keys(selected).filter(day => selected[day]),
                 ownerId: userId,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
@@ -117,6 +119,7 @@ export default function createCard() {
 
     return (
         <SafeAreaView>
+            <Text style={{ fontSize: 25, textAlign: "center" }}>Create taskcard</Text>
             <ScrollView>
                 <View style={{ alignItems: "center" }}>
                     <TextInput
@@ -191,24 +194,15 @@ export default function createCard() {
                         <Text style={styles.text}>Shared users</Text>
                     </TouchableOpacity>
 
+                    <View style={{ flex: 1, marginBottom: 250 }}>
+                        <TouchableOpacity
+                            onPress={() => handleSubmit()}
+                            style={styles.Button}
+                        >
+                            <Text style={styles.text}>Save</Text>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity
-                        style={styles.bigButton}
-                        onPress={() => setNotiVisible(true)}
-                    >
-                        <Text style={styles.text}>Notifications</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        onPress={() => handleSubmit()}
-                        style={styles.Button}
-                    >
-                        <Text style={styles.text}>Save</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.Button}>
-                        <Text style={styles.text}>Delete</Text>
-                    </TouchableOpacity>
+                    </View>
 
 
 
@@ -234,26 +228,6 @@ export default function createCard() {
                         </View>
                     </Modal>
 
-                    {/* Notification popup panel */}
-
-                    <Modal
-                        visible={notiVisible}
-                        transparent
-                        animationType="fade"
-                        onRequestClose={() => setNotiVisible(false)}
-                    >
-                        <View style={{ backgroundColor: "#00000050", height: "100%", justifyContent: "center", alignItems: "center" }}>
-
-                            <NotificationTab />
-                            <TouchableOpacity
-
-                                style={styles.Button}
-                                onPress={() => setNotiVisible(false)}
-                            >
-                                <Text style={{ textAlign: "center" }}>Okay</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </Modal>
 
                 </View>
             </ScrollView>
@@ -268,7 +242,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
     Button: {
-        width: "50%",
+        width: 150,
         padding: 10,
         backgroundColor: "grey",
         margin: 10,

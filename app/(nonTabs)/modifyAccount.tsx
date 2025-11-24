@@ -6,6 +6,8 @@ import { updateProfile, onAuthStateChanged, updatePassword, verifyBeforeUpdateEm
 import { router } from 'expo-router'
 import { doc, setDoc, getDocs, query, where, collection } from "firebase/firestore";
 import { Image } from 'react-native'
+import { FontAwesome5 } from '@expo/vector-icons';
+
 
 
 import { Text, TextInput, } from '@/components/Themed';
@@ -114,10 +116,11 @@ export default function modifyAccount() {
     return (
         <SafeAreaView style={{ alignItems: 'center' }}>
             <TouchableOpacity onPress={() => router.push('/modifyPfp')}>
+                <FontAwesome5 name="pen" size={20} color="black" solid />
                 <Image
                     style={{ width: 150, height: 150, borderRadius: 150 }}
                     source={pfpMap[user?.photoURL || "pfp1"]} // userPfp if user hasnt changed it, default is pfp.png
-                />
+                ></Image>
             </TouchableOpacity>
 
             <Text style={{ fontSize: 50 }}>Edit profile</Text>

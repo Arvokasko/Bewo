@@ -10,17 +10,6 @@ export default function index() {
 
     return (
         <SafeAreaView>
-
-            {/* Top menu */}
-            <View style={{ alignItems: "center", backgroundColor: "lightblue" }}>
-                <View style={{ flexDirection: "row", }}>
-                    <TextInput placeholder='Search' style={{ backgroundColor: "grey", width: "70%", borderRadius: 8, padding: 10, margin: 20 }} />
-                    <TouchableOpacity onPress={() => router.push("/(nonTabs)/createCard")}>
-                        <Text style={{ fontSize: 50, marginRight: 25, marginTop: 5 }}>+</Text>
-                    </TouchableOpacity>
-                </View>
-
-            </View>
             <ScrollView>
                 <View style={{ alignItems: "center", marginBottom: 100 }}>
                     <TaskCard shared={true} />
@@ -30,20 +19,3 @@ export default function index() {
         </SafeAreaView >
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    separator: {
-        marginVertical: 30,
-        height: 1,
-        width: '80%',
-    },
-});
