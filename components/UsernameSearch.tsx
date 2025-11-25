@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { View, TextInput, FlatList, Text, TouchableOpacity, Alert } from "react-native";
 import { collection, query, orderBy, startAt, endAt, getDocs } from "firebase/firestore";
 import { db } from "@/FirebaseConfig";
+import { useThemedStyles } from "@/theme/useThemedStyles";
+
 
 type User = { uid: string; username: string };
 
@@ -13,6 +15,9 @@ export default function UsernameSearch({ onSelectionChange }: UsernameSearchProp
     const [searchText, setSearchText] = useState("");
     const [results, setResults] = useState<User[]>([]);
     const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+
+    const { styles, theme } = useThemedStyles();
+
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -62,16 +67,11 @@ export default function UsernameSearch({ onSelectionChange }: UsernameSearchProp
     return (
         <View style={{ padding: 20 }}>
             <TextInput
-                placeholder="Search username..."
+                placeholder="Search usernames"
                 value={searchText}
                 onChangeText={setSearchText}
-                style={{
-                    borderWidth: 1,
-                    borderColor: "#ccc",
-                    padding: 10,
-                    borderRadius: 8,
-                    marginBottom: 10,
-                }}
+                style={styles.titleInput}
+                placeholderTextColor={theme.placeholderColor}
             />
             <FlatList
                 data={results}
@@ -79,40 +79,31 @@ export default function UsernameSearch({ onSelectionChange }: UsernameSearchProp
                 renderItem={({ item }) => (
                     <TouchableOpacity
                         onPress={() => handleSelect(item)}
-                        style={{
-                            padding: 10,
-                            borderBottomWidth: 1,
-                            borderColor: "#eee",
-                        }}
+                        style={styles.resultItem}
                     >
-                        <Text>{item.username}</Text>
+                        <Text style={styles.text}>{item.username}</Text>
                     </TouchableOpacity>
                 )}
             />
 
             {/* Selected users with individual buttons */}
             <View style={{ marginTop: 20 }}>
-                <Text style={{ fontWeight: "bold", marginBottom: 10 }}>Selected:</Text>
+                <Text style={styles.text}>Selected users</Text>
                 {selectedUsers.map((user) => (
                     <View
                         key={user.uid}
                         style={{
                             flexDirection: "row",
                             alignItems: "center",
-                            marginBottom: 8,
+                            marginTop: 8,
                         }}
                     >
-                        <Text style={{ flex: 1 }}>{user.username}</Text>
+                        <Text style={[styles.text, { flex: 1, marginLeft: 10 }]}>{user.username}</Text>
                         <TouchableOpacity
                             onPress={() => handleDeselect(user.uid)}
-                            style={{
-                                backgroundColor: "#f55",
-                                paddingVertical: 6,
-                                paddingHorizontal: 12,
-                                borderRadius: 6,
-                            }}
+                            style={styles.deleteBtn}
                         >
-                            <Text style={{ color: "#fff", fontWeight: "bold" }}>X</Text>
+                            <Text style={styles.btnText}>X</Text>
                         </TouchableOpacity>
                     </View>
                 ))}

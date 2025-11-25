@@ -16,9 +16,13 @@ import UsernameSearch from '@/components/UsernameSearch'
 import { View } from 'react-native'
 
 import { Text } from '@/components/Themed'
+import { useColorScheme } from 'react-native';
+import { useThemedStyles } from "../../theme/useThemedStyles";
+
 
 
 export default function createCard() {
+    const { styles, theme } = useThemedStyles();
     const [userSelected, setUserSelected] = useState<string[]>([]);
 
     const [selectedUsernames, setSelectedUsernames] = useState<string[]>([]);
@@ -26,6 +30,8 @@ export default function createCard() {
     const [selectedUsers, setSelectedUsers] = useState<{ uid: string; username: string }[]>([]);
 
     const [notificationData, setNotificationData] = useState("");
+
+
 
 
 
@@ -38,21 +44,6 @@ export default function createCard() {
     const [content, setContent] = useState("");
 
 
-
-    // // checkbox handling
-    // const [selected, setSelected] = useState<{ [key: string]: boolean }>({
-    //     Mon: false,
-    //     Tue: false,
-    //     Wed: false,
-    //     Thu: false,
-    //     Fri: false,
-    //     Sat: false,
-    //     Sun: false,
-    // });
-
-    // const toggleCheckbox = (key: string) => {
-    //     setSelected((prev) => ({ ...prev, [key]: !prev[key] }));
-    // };
 
 
     const [checklist, setChecklist] = useState([{ label: "", checked: false }]);
@@ -118,15 +109,15 @@ export default function createCard() {
 
 
     return (
-        <SafeAreaView>
-            <Text style={{ fontSize: 25, textAlign: "center" }}>Create taskcard</Text>
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.backgroundDark }}>
             <ScrollView>
                 <View style={{ alignItems: "center" }}>
                     <TextInput
+                        style={styles.titleInput}
                         value={title}
                         onChangeText={setTitle}
                         placeholder='Title'
-                        style={{ backgroundColor: "grey", width: "80%", borderRadius: 8, padding: 10, margin: 20 }}
+                        placeholderTextColor={theme.placeholderColor}
                     />
 
 
@@ -134,57 +125,52 @@ export default function createCard() {
                         value={content}
                         onChangeText={setContent}
                         placeholder='Type your thoughts...'
-                        style={{ width: "80%", backgroundColor: "grey", height: "auto", minHeight: 200, borderRadius: 8, textAlignVertical: "top", padding: 10 }}
+                        placeholderTextColor={theme.placeholderColor}
+                        style={styles.contentInput}
                         multiline={true}
                     // numberOfLines={200} // could be useful
                     />
 
-                    {checklist.map((item, index) => (
-                        <View
-                            key={index}
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                marginVertical: 6,
-                                width: "80%",
-                            }}
-                        >
-                            {/* Checkbox toggle */}
-                            <TouchableOpacity onPress={() => toggleChecklist(index)}>
-                                <Text style={{ fontSize: 18 }}>{item.checked ? "☑" : "☐"}</Text>
-                            </TouchableOpacity>
+                    <View style={styles.checklistView}>
 
-                            {/* Text input */}
-                            <TextInput
-                                value={item.label}
-                                onChangeText={(text) => handleChecklistChange(text, index)}
-                                placeholder={`Task ${index + 1}`}
+                        {checklist.map((item, index) => (
+                            <View
+                                key={index}
                                 style={{
-                                    marginLeft: 10,
-                                    borderBottomWidth: 1,
-                                    flex: 1,
-                                    paddingVertical: 4,
-                                }}
-                            />
-
-                            {/* Delete button */}
-                            <TouchableOpacity
-                                onPress={() => {
-                                    const updated = checklist.filter((_, i) => i !== index);
-                                    setChecklist(updated.length ? updated : [{ label: "", checked: false }]);
-                                }}
-                                style={{
-                                    marginLeft: 10,
-                                    paddingHorizontal: 8,
-                                    paddingVertical: 4,
-                                    backgroundColor: "darkred",
-                                    borderRadius: 4,
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    marginVertical: 6,
+                                    width: "80%",
                                 }}
                             >
-                                <Text style={{ color: "white" }}>✕</Text>
-                            </TouchableOpacity>
-                        </View>
-                    ))}
+                                {/* Checkbox toggle */}
+                                <TouchableOpacity onPress={() => toggleChecklist(index)}>
+                                    <Text style={{ fontSize: 25 }}>{item.checked ? "☑" : "☐"}</Text>
+                                </TouchableOpacity>
+
+                                {/* Text input */}
+                                <TextInput
+                                    value={item.label}
+                                    onChangeText={(text) => handleChecklistChange(text, index)}
+                                    placeholder={`Task ${index + 1}`}
+                                    placeholderTextColor={theme.placeholderColor}
+                                    style={styles.checkListInput}
+                                />
+
+                                {/* Delete button */}
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        const updated = checklist.filter((_, i) => i !== index);
+                                        setChecklist(updated.length ? updated : [{ label: "", checked: false }]);
+                                    }}
+                                    style={styles.deleteBtn}
+                                >
+                                    <Text style={styles.btnText}>✕</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ))}
+
+                    </View>
 
 
                     <TouchableOpacity style={styles.bigButton}
@@ -199,7 +185,7 @@ export default function createCard() {
                             onPress={() => handleSubmit()}
                             style={styles.Button}
                         >
-                            <Text style={styles.text}>Save</Text>
+                            <Text style={styles.btnText}>Save</Text>
                         </TouchableOpacity>
 
                     </View>
@@ -207,59 +193,36 @@ export default function createCard() {
 
 
                     {/* Shared users popup panel */}
-
                     <Modal
                         visible={shUserVisible}
                         transparent
                         animationType="fade"
                         onRequestClose={() => setShUserVisible(false)}
                     >
-                        <View style={{ flex: 1, justifyContent: "center", padding: 20, backgroundColor: "#00000050", }}>
+                        {/* Overlay to center content */}
+                        <View style={styles.overlay}>
+                            {/* Inner container card */}
+                            <View style={[styles.modalContent, { backgroundColor: theme.backgroundDark }]}>
+                                <Text style={styles.text}>Share this taskcard with any user</Text>
 
-                            <Text style={{ color: "white" }}>Shared taskcard with users</Text>
-                            <UsernameSearch onSelectionChange={setSelectedUsers} />
-                            <TouchableOpacity
+                                {/* UsernameSearch stays the same */}
+                                <UsernameSearch onSelectionChange={setSelectedUsers} />
 
-                                style={styles.Button}
-                                onPress={() => setShUserVisible(false)}
-                            >
-                                <Text style={{ textAlign: "center" }}>Okay</Text>
-                            </TouchableOpacity>
+                                <View style={{ alignItems: "center", marginTop: 20 }}>
+                                    <TouchableOpacity
+                                        style={styles.Button}
+                                        onPress={() => setShUserVisible(false)}
+                                    >
+                                        <Text style={styles.btnText}>Okay</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
                         </View>
                     </Modal>
 
-
                 </View>
-            </ScrollView>
-        </SafeAreaView>
+            </ScrollView >
+        </SafeAreaView >
 
     )
 }
-
-
-const styles = StyleSheet.create({
-    text: {
-        textAlign: "center",
-    },
-    Button: {
-        width: 150,
-        padding: 10,
-        backgroundColor: "grey",
-        margin: 10,
-        borderRadius: 8,
-    },
-    smallButton: {
-        width: 100,
-        padding: 10,
-        backgroundColor: "grey",
-        margin: 10,
-        borderRadius: 8,
-    },
-    bigButton: {
-        width: "80%",
-        padding: 10,
-        backgroundColor: "grey",
-        margin: 10,
-        borderRadius: 8,
-    },
-});

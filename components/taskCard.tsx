@@ -15,7 +15,7 @@ export default function TaskCard({ shared }: { shared: boolean }) {
     const [cards, setCards] = useState<any[]>([]);
 
     const [searchQuery, setSearchQuery] = useState("");
-    const [sortOption, setSortOption] = useState<"latest" | "name" | "az" | "za">("latest");
+    const [sortOption, setSortOption] = useState<"latest" | "oldest" | "az" | "za">("latest");
 
 
 
@@ -67,7 +67,7 @@ export default function TaskCard({ shared }: { shared: boolean }) {
             if (sortOption === "latest") {
                 return b.updatedAt?.toMillis() - a.updatedAt?.toMillis();
             }
-            if (sortOption === "name") {
+            if (sortOption === "oldest") {
                 return a.title.localeCompare(b.title);
             }
             if (sortOption === "az") {
@@ -116,108 +116,136 @@ export default function TaskCard({ shared }: { shared: boolean }) {
 
     return (
         <View style={{ width: "100%", alignItems: "center" }}>
-            <View style={{ alignItems: "center", backgroundColor: "lightblue", paddingVertical: 10 }}>
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    {/* Search Bar */}
+            <View style={{ alignItems: "center", paddingVertical: 10 }}>
+
+                {/* Search Row */}
+                <View style={{ flexDirection: "row", alignItems: "center", }}>
                     <TextInput
                         placeholder="Search by title..."
                         value={searchQuery}
                         onChangeText={setSearchQuery}
                         style={{
                             backgroundColor: "grey",
-                            width: "70%",
+                            width: "75%",
                             borderRadius: 8,
                             padding: 10,
                             margin: 20,
                         }}
                     />
+                    {shared && (
+                        <TouchableOpacity onPress={() => router.push("/(nonTabs)/createCard")}>
+                            <FontAwesome5 name="plus" size={25} color="black" solid />
+                        </TouchableOpacity>
 
-                    {/* Add Button */}
-                    <TouchableOpacity onPress={() => router.push("/(nonTabs)/createCard")}>
-                        <Text style={{ fontSize: 40, marginRight: 25, marginTop: 5 }}>+</Text>
-                    </TouchableOpacity>
+                    )}
                 </View>
 
                 {/* Sort Options */}
-                <View style={{ flexDirection: "row", justifyContent: "space-around", width: "90%", marginBottom: 10 }}>
-                    <TouchableOpacity onPress={() => setSortOption("latest")}>
-                        <Text style={{ borderBottomWidth: sortOption === "latest" ? 2 : 0 }}>Latest</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setSortOption("name")}>
-                        <Text style={{ borderBottomWidth: sortOption === "name" ? 2 : 0 }}>Name</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setSortOption("az")}>
-                        <Text style={{ borderBottomWidth: sortOption === "az" ? 2 : 0 }}>A–Z</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setSortOption("za")}>
-                        <Text style={{ borderBottomWidth: sortOption === "za" ? 2 : 0 }}>Z–A</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-            {filteredAndSortedCards.map(card => (
-                <View key={card.id} style={{ width: "100%", alignItems: "center" }}>
+                <View style={{ width: "100%", alignItems: "center" }}>
                     <View
                         style={{
-                            backgroundColor: "grey",
-                            marginTop: 15,
-                            width: "90%",
-                            borderRadius: 8,
-                            height: 150,
-                            overflow: 'hidden'
-                        }}>
+                            flexDirection: "row",
+                            justifyContent: "space-around",
+                            width: 350,
+                            paddingVertical: 10,
+                        }}
+                    >
 
-
-                        <View style={{ justifyContent: "center", position: "absolute", height: 150, right: 0 }}>
-                            <TouchableOpacity
-                                style={{ padding: 20, backgroundColor: "transparent" }}
-                                hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
-                                onPress={() =>
-                                    router.push(
-                                        `/(nonTabs)/modifyTaskCard?taskId=${card.id}&sharedState=${shared}`
-                                    )
-                                }
-                            >
-                                <FontAwesome5 name="pen" size={20} color="black" solid />
+                        <View style={{ width: 50, alignItems: "center" }}>
+                            <TouchableOpacity onPress={() => setSortOption("latest")}>
+                                <Text style={{ borderBottomWidth: sortOption === "latest" ? 2 : 0 }}>Latest</Text>
                             </TouchableOpacity>
-
                         </View>
-
-                        <TouchableOpacity
-                            style={{ width: "85%", padding: 10, height: 150 }}
-                            onPress={() => {
-                                setSelectedCard(card);
-                                setVisible(true);
-                            }}
-                        >
-                            <Text style={styles.title}>{card.title}</Text>
-                            <Text>{card.updatedAt?.toDate().toLocaleDateString()}</Text>
-
-
-                            {card.content !== "" && (
-                                <Text>{card.content}</Text>
-                            )}
-
-
-
-
-                            {card.checklist?.map((item: any, index: number) => (
-                                <View key={index} style={{ flexDirection: "row", alignItems: "center" }}>
-                                    <Text style={{ fontSize: 18 }}>{item.checked ? "☑" : "☐"}</Text>
-                                    <Text style={{ marginLeft: 10 }}>{item.label}</Text>
-                                </View>
-                            ))}
-                        </TouchableOpacity>
-
-                        <LinearGradient
-                            colors={['rgba(128, 128, 128, 1)', 'transparent']}
-                            start={{ x: 0.5, y: 1 }}
-                            end={{ x: 0.5, y: 0 }}
-                            style={styles.innerShadow}
-                        />
+                        <View style={{ width: 50, alignItems: "center" }}>
+                            <TouchableOpacity onPress={() => setSortOption("oldest")}>
+                                <Text style={{ borderBottomWidth: sortOption === "oldest" ? 2 : 0 }}>Oldest</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ width: 50, alignItems: "center" }}>
+                            <TouchableOpacity onPress={() => setSortOption("az")}>
+                                <Text style={{ borderBottomWidth: sortOption === "az" ? 2 : 0 }}>A–Z</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{ width: 50, alignItems: "center" }}>
+                            <TouchableOpacity onPress={() => setSortOption("za")}>
+                                <Text style={{ borderBottomWidth: sortOption === "za" ? 2 : 0 }}>Z–A</Text>
+                            </TouchableOpacity>
+                        </View>
 
                     </View>
                 </View>
-            ))}
+
+            </View>
+
+
+
+
+            {
+                filteredAndSortedCards.map(card => (
+                    <View key={card.id} style={{ width: "100%", alignItems: "center" }}>
+                        <View
+                            style={{
+                                backgroundColor: "grey",
+                                marginTop: 15,
+                                width: "90%",
+                                borderRadius: 8,
+                                height: 150,
+                                overflow: 'hidden'
+                            }}>
+
+
+                            <View style={{ justifyContent: "center", position: "absolute", height: 150, right: 0, zIndex: 15 }}>
+                                <TouchableOpacity
+                                    style={{ padding: 20, backgroundColor: "transparent" }}
+                                    hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                                    onPress={() =>
+                                        router.push(
+                                            `/(nonTabs)/modifyTaskCard?taskId=${card.id}&sharedState=${shared}`
+                                        )
+                                    }
+                                >
+                                    <FontAwesome5 name="pen" size={20} color="black" solid />
+                                </TouchableOpacity>
+
+                            </View>
+
+                            <TouchableOpacity
+                                style={{ width: "85%", padding: 10, height: 150 }}
+                                onPress={() => {
+                                    setSelectedCard(card);
+                                    setVisible(true);
+                                }}
+                            >
+                                <Text style={styles.title}>{card.title}</Text>
+                                <Text>{card.updatedAt?.toDate().toLocaleDateString()}</Text>
+
+
+                                {card.content !== "" && (
+                                    <Text>{card.content}</Text>
+                                )}
+
+
+
+
+                                {card.checklist?.map((item: any, index: number) => (
+                                    <View key={index} style={{ flexDirection: "row", alignItems: "center" }}>
+                                        <Text style={{ fontSize: 18 }}>{item.checked ? "☑" : "☐"}</Text>
+                                        <Text style={{ marginLeft: 10 }}>{item.label}</Text>
+                                    </View>
+                                ))}
+                            </TouchableOpacity>
+
+                            <LinearGradient
+                                colors={['rgba(128, 128, 128, 1)', 'transparent']}
+                                start={{ x: 0.5, y: 1 }}
+                                end={{ x: 0.5, y: 0 }}
+                                style={styles.innerShadow}
+                            />
+
+                        </View>
+                    </View>
+                ))
+            }
 
             <Modal
                 visible={visible}

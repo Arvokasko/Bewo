@@ -81,6 +81,7 @@ export default function AccountScreen() {
             <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
                 <Text style={styles.btnText}>Sign Out</Text>
             </TouchableOpacity>
+
         </SafeAreaView>
     );
 }
@@ -97,9 +98,9 @@ const styles = StyleSheet.create({
     },
     logoutButton: {
         width: '80%',
-        backgroundColor: '#E53935', // red for logout
+        backgroundColor: '#E53935',
         padding: 20,
-        borderRadius: 15,
+        borderRadius: 50,
         alignItems: 'center',
         justifyContent: 'center',
         shadowColor: '#E53935',
