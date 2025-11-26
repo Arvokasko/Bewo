@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, TextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { getDocs, query, where, collection, Timestamp } from "firebase/firestore";
 import { auth, db } from '../FirebaseConfig';
 import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { TextInput } from './Themed';
+import { useThemedStyles } from "../theme/useThemedStyles";
+
 
 
 export default function TaskCard({ shared }: { shared: boolean }) {

@@ -73,7 +73,7 @@ export default function modifyAccount() {
 
         try {
             // Update username if changed
-            if (username && username !== user.displayName) {
+            if ((username && username !== user.displayName)) {
                 await updateUsername(username);
             }
 
@@ -91,26 +91,36 @@ export default function modifyAccount() {
     };
 
 
-
     const updateUsername = async (newUsername: string) => {
         if (!auth.currentUser) return;
 
-        // 1. Check if username exists
-        const q = query(collection(db, "users"), where("username", "==", newUsername));
+        // Normalize input for uniqueness check
+        const normalizedInput = newUsername.trim().toLowerCase();
+
+        // 1. Check if username exists (case-insensitive)
+        const q = query(collection(db, "users"));
         const snapshot = await getDocs(q);
 
-        if (!snapshot.empty) {
-            throw new Error("Username already taken");
-        }
+        // Loop through and compare normalized values
+        snapshot.forEach(docSnap => {
+            const existingUsername = docSnap.data().username;
+            if (existingUsername && existingUsername.toLowerCase() === normalizedInput) {
+                throw new Error("Username already taken");
+            }
+        });
 
-        // 2. Update Auth profile
+        // 2. Update Auth profile (store original casing for display)
         await updateProfile(auth.currentUser, { displayName: newUsername });
 
-        // 3. Update Firestore user doc
-        await setDoc(doc(db, "users", auth.currentUser.uid), {
-            username: newUsername,
-            email: auth.currentUser.email,
-        }, { merge: true });
+        // 3. Update Firestore user doc (store only original casing)
+        await setDoc(
+            doc(db, "users", auth.currentUser.uid),
+            {
+                username: newUsername, // only original casing stored
+                email: auth.currentUser.email,
+            },
+            { merge: true }
+        );
     };
 
     return (

@@ -28,6 +28,19 @@ export const useThemedStyles = () => {
     const theme = scheme === "dark" ? darkTheme : lightTheme;
 
     const styles = StyleSheet.create({
+        cardFade: {
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 40,
+            zIndex: 10,
+        },
+        cardTitle: {
+            fontSize: 20,
+            fontWeight: 'bold',
+            width: "90%",
+        },
         text: {
             color: theme.text,
             fontWeight: "600",
