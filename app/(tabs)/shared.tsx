@@ -4,22 +4,27 @@ import TaskCard from '@/components/taskCard';
 import { View } from 'react-native';
 import { TextInput } from 'react-native';
 import { ScrollView } from 'react-native';
-
+import { useThemedStyles } from '@/theme/useThemedStyles';
 
 
 
 
 export default function TabTwoScreen() {
-    return (
-        <SafeAreaView>
-            <ScrollView>
-                <View style={{ alignItems: "center", marginBottom: 100 }}>
-                    <TaskCard shared={false} />
-                    {/* cardIndex="1" */}
-                </View>
+    const { styles, theme } = useThemedStyles();
 
-            </ScrollView>
-        </SafeAreaView >
+    return (
+        <View style={{ backgroundColor: theme.backgroundDark, flex: 1 }}>
+
+            <SafeAreaView>
+                <ScrollView>
+                    <View style={{ alignItems: "center", marginBottom: 100 }}>
+                        <TaskCard shared={false} />
+                        {/* cardIndex="1" */}
+                    </View>
+
+                </ScrollView>
+            </SafeAreaView >
+        </View>
     );
 }
 

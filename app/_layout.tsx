@@ -13,16 +13,6 @@ export default function RootLayout() {
     const colorScheme = useColorScheme();
     const [user, setUser] = useState<User | null | undefined>(undefined);
 
-    // // Configure notification handler
-    // Notifications.setNotificationHandler({
-    //     handleNotification: async () => ({
-    //         shouldShowAlert: true,
-    //         shouldPlaySound: true,
-    //         shouldSetBadge: false,
-    //         shouldShowBanner: true, // ✅ new
-    //         shouldShowList: true,   // ✅ new
-    //     }),
-    // });
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {

@@ -11,6 +11,9 @@ import { useThemedStyles } from "../theme/useThemedStyles";
 
 
 export default function TaskCard({ shared }: { shared: boolean }) {
+
+    const { styles, theme } = useThemedStyles();
+
     const [visible, setVisible] = useState(false);
     const [selectedCard, setSelectedCard] = useState<any>(null);
     const [cards, setCards] = useState<any[]>([]);
@@ -125,17 +128,14 @@ export default function TaskCard({ shared }: { shared: boolean }) {
                         placeholder="Search by title..."
                         value={searchQuery}
                         onChangeText={setSearchQuery}
-                        style={{
-                            backgroundColor: "grey",
-                            width: "75%",
-                            borderRadius: 8,
-                            padding: 10,
-                            margin: 20,
-                        }}
+                        style={styles.titleInput}
+                        placeholderTextColor={theme.placeholderColor}
                     />
                     {shared && (
-                        <TouchableOpacity onPress={() => router.push("/(nonTabs)/createCard")}>
-                            <FontAwesome5 name="plus" size={25} color="black" solid />
+                        <TouchableOpacity
+                            style={{ marginRight: 20 }}
+                            onPress={() => router.push("/(nonTabs)/createCard")}>
+                            <FontAwesome5 name="plus" size={25} color={theme.text} solid />
                         </TouchableOpacity>
 
                     )}
@@ -154,22 +154,22 @@ export default function TaskCard({ shared }: { shared: boolean }) {
 
                         <View style={{ width: 50, alignItems: "center" }}>
                             <TouchableOpacity onPress={() => setSortOption("latest")}>
-                                <Text style={{ borderBottomWidth: sortOption === "latest" ? 2 : 0 }}>Latest</Text>
+                                <Text style={[styles.text, { borderBottomWidth: sortOption === "latest" ? 2 : 0 }]}>Latest</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={{ width: 50, alignItems: "center" }}>
                             <TouchableOpacity onPress={() => setSortOption("oldest")}>
-                                <Text style={{ borderBottomWidth: sortOption === "oldest" ? 2 : 0 }}>Oldest</Text>
+                                <Text style={[styles.text, { borderBottomWidth: sortOption === "oldest" ? 2 : 0 }]}>Oldest</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={{ width: 50, alignItems: "center" }}>
                             <TouchableOpacity onPress={() => setSortOption("az")}>
-                                <Text style={{ borderBottomWidth: sortOption === "az" ? 2 : 0 }}>A–Z</Text>
+                                <Text style={[styles.text, { borderBottomWidth: sortOption === "az" ? 2 : 0 }]}>A–Z</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={{ width: 50, alignItems: "center" }}>
                             <TouchableOpacity onPress={() => setSortOption("za")}>
-                                <Text style={{ borderBottomWidth: sortOption === "za" ? 2 : 0 }}>Z–A</Text>
+                                <Text style={[styles.text, { borderBottomWidth: sortOption === "za" ? 2 : 0 }]}>Z–A</Text>
                             </TouchableOpacity>
                         </View>
 
@@ -185,19 +185,12 @@ export default function TaskCard({ shared }: { shared: boolean }) {
                 filteredAndSortedCards.map(card => (
                     <View key={card.id} style={{ width: "100%", alignItems: "center" }}>
                         <View
-                            style={{
-                                backgroundColor: "grey",
-                                marginTop: 15,
-                                width: "90%",
-                                borderRadius: 8,
-                                height: 150,
-                                overflow: 'hidden'
-                            }}>
+                            style={styles.taskCard}>
 
 
                             <View style={{ justifyContent: "center", position: "absolute", height: 150, right: 0, zIndex: 15 }}>
                                 <TouchableOpacity
-                                    style={{ padding: 20, backgroundColor: "transparent" }}
+                                    style={{ padding: 20, backgroundColor: "transparent", right: 10 }}
                                     hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
                                     onPress={() =>
                                         router.push(
@@ -205,7 +198,7 @@ export default function TaskCard({ shared }: { shared: boolean }) {
                                         )
                                     }
                                 >
-                                    <FontAwesome5 name="pen" size={20} color="black" solid />
+                                    <FontAwesome5 name="pen" size={20} color={theme.text} solid />
                                 </TouchableOpacity>
 
                             </View>
@@ -217,12 +210,12 @@ export default function TaskCard({ shared }: { shared: boolean }) {
                                     setVisible(true);
                                 }}
                             >
-                                <Text style={styles.title}>{card.title}</Text>
-                                <Text>{card.updatedAt?.toDate().toLocaleDateString()}</Text>
+                                <Text style={styles.cardTitle}>{card.title}</Text>
+                                <Text style={{ color: theme.text }}>{card.updatedAt?.toDate().toLocaleDateString()}</Text>
 
 
                                 {card.content !== "" && (
-                                    <Text>{card.content}</Text>
+                                    <Text style={{ color: theme.text }}>{card.content}</Text>
                                 )}
 
 
@@ -230,17 +223,17 @@ export default function TaskCard({ shared }: { shared: boolean }) {
 
                                 {card.checklist?.map((item: any, index: number) => (
                                     <View key={index} style={{ flexDirection: "row", alignItems: "center" }}>
-                                        <Text style={{ fontSize: 18 }}>{item.checked ? "☑" : "☐"}</Text>
-                                        <Text style={{ marginLeft: 10 }}>{item.label}</Text>
+                                        <Text style={{ fontSize: 18, color: theme.text }}>{item.checked ? "☑" : "☐"}</Text>
+                                        <Text style={{ marginLeft: 10, color: theme.text }}>{item.label}</Text>
                                     </View>
                                 ))}
                             </TouchableOpacity>
 
                             <LinearGradient
-                                colors={['rgba(128, 128, 128, 1)', 'transparent']}
+                                colors={[theme.backgroundLight, 'transparent']}
                                 start={{ x: 0.5, y: 1 }}
                                 end={{ x: 0.5, y: 0 }}
-                                style={styles.innerShadow}
+                                style={styles.cardFade}
                             />
 
                         </View>
@@ -253,56 +246,46 @@ export default function TaskCard({ shared }: { shared: boolean }) {
                 transparent
                 onRequestClose={() => setVisible(false)}
             >
-                <View style={{ backgroundColor: "#00000050", flex: 1, justifyContent: "center", alignItems: "center" }}>
-                    {selectedCard && (
-                        <>
-                            <Text style={{ fontSize: 20, fontWeight: "bold" }}>
-                                {selectedCard.title}
-                            </Text>
+                <View style={{ backgroundColor: theme.backgroundDark, flex: 1, justifyContent: "center", padding: 20 }}>
+                    <View style={styles.modalContent}>
+                        {selectedCard && (
+                            <>
+                                <Text style={styles.cardTitle}>
+                                    {selectedCard.title}
+                                </Text>
 
-                            <Text>{selectedCard.updatedAt?.toDate().toLocaleDateString()}</Text>
+                                <Text style={{ color: theme.text }}>{selectedCard.updatedAt?.toDate().toLocaleDateString()}</Text>
 
-                            {selectedCard.content !== "" && (
-                                <Text style={{ marginVertical: 10 }}>{selectedCard.content}</Text>
-                            )}
+                                {selectedCard.content !== "" && (
+                                    <Text style={{ marginVertical: 10, color: theme.text }}>{selectedCard.content}</Text>
+                                )}
 
-                            {selectedCard.checklist?.map((item: any, index: number) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    style={{ flexDirection: "row", alignItems: "center" }}
-                                    onPress={() => toggleChecklistItem(selectedCard.id, index)}
-                                >
-                                    <Text style={{ fontSize: 18 }}>{item.checked ? "☑" : "☐"}</Text>
-                                    <Text style={{ marginLeft: 10 }}>{item.label}</Text>
-                                </TouchableOpacity>
-                            ))}
-                        </>
-                    )}
+                                {selectedCard.checklist?.map((item: any, index: number) => (
+                                    <TouchableOpacity
+                                        key={index}
+                                        style={{ flexDirection: "row", alignItems: "center" }}
+                                        onPress={() => toggleChecklistItem(selectedCard.id, index)}
+                                    >
+                                        <Text style={{ fontSize: 18, color: theme.text }}>{item.checked ? "☑" : "☐"}</Text>
+                                        <Text style={{ marginLeft: 10, color: theme.text }}>{item.label}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </>
+                        )}
 
-                    <TouchableOpacity
-                        onPress={() => setVisible(false)}
-                        style={{ width: "50%", padding: 10, backgroundColor: "grey", margin: 10, borderRadius: 8, alignItems: "center" }}
-                    >
-                        <Text>Close</Text>
-                    </TouchableOpacity>
+                    </View>
+
+                    <View style={{ alignItems: "center", width: "100%" }}>
+                        <TouchableOpacity
+                            onPress={() => setVisible(false)}
+                            style={styles.bigButton}
+                        >
+                            <Text style={styles.btnText}>Close</Text>
+                        </TouchableOpacity>
+
+                    </View>
                 </View>
             </Modal >
         </View >
     );
 }
-
-const styles = StyleSheet.create({
-    title: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        width: "90%",
-    },
-    innerShadow: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        height: 40,
-        zIndex: 10,
-    },
-});

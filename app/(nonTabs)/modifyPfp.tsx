@@ -4,6 +4,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { auth } from "../../FirebaseConfig";
 import { updateProfile, onAuthStateChanged } from "firebase/auth";
+import { View } from "@/components/Themed";
+import { useThemedStyles } from "@/theme/useThemedStyles";
 
 // ✅ Local static assets
 const pfps = [
@@ -44,6 +46,9 @@ const pfpMap: Record<string, any> = {
 };
 
 export default function PfpGrid() {
+
+    const { theme, styles } = useThemedStyles();
+
     const [user, setUser] = useState<any>(null);
 
     useEffect(() => {
@@ -70,7 +75,7 @@ export default function PfpGrid() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={{ backgroundColor: theme.backgroundDark, flex: 1 }}>
             <ScrollView contentContainerStyle={styles.grid}>
                 {pfps.map((pfp, index) => (
                     <TouchableOpacity
@@ -83,6 +88,7 @@ export default function PfpGrid() {
                 ))}
             </ScrollView>
         </SafeAreaView>
+
     );
 }
 
@@ -104,25 +110,3 @@ export function UserAvatar({ size = 100 }) {
         />
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    grid: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "space-between",
-        padding: 30,
-        gap: 12,
-    },
-    item: {
-        width: 100,
-        marginBottom: 12,
-    },
-    image: {
-        width: 100,
-        height: 100,
-        borderRadius: 9999,
-    },
-});

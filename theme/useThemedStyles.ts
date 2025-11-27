@@ -1,4 +1,5 @@
 // useThemedStyles.ts
+import TaskCard from "@/components/taskCard";
 import { StyleSheet, useColorScheme } from "react-native";
 
 // Theme definitions
@@ -28,6 +29,21 @@ export const useThemedStyles = () => {
     const theme = scheme === "dark" ? darkTheme : lightTheme;
 
     const styles = StyleSheet.create({
+        taskCard: {
+            backgroundColor: theme.backgroundLight,
+            marginTop: 15,
+            padding: 10,
+            width: "90%",
+            borderRadius: 20,
+            height: 150,
+            overflow: 'hidden',
+
+            shadowColor: theme.shadow,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.4,
+            shadowRadius: 5,
+            elevation: 5,
+        },
         cardFade: {
             position: 'absolute',
             bottom: 0,
@@ -39,11 +55,12 @@ export const useThemedStyles = () => {
         cardTitle: {
             fontSize: 20,
             fontWeight: 'bold',
-            width: "90%",
+            color: theme.text,
         },
         text: {
             color: theme.text,
             fontWeight: "600",
+            borderColor: theme.text
         },
         btnText: {
             textAlign: "center",
@@ -158,6 +175,67 @@ export const useThemedStyles = () => {
             paddingHorizontal: 10,
             borderBottomWidth: 1,
             borderColor: "#eee",
+        },
+        container: {
+            flex: 1,
+            alignItems: 'center',
+        },
+        title: {
+            fontSize: 28,
+            fontWeight: '800',
+            marginBottom: 5,
+            color: theme.text,
+        },
+        logoutButton: {
+            // width: '80%',
+            // backgroundColor: '#E53935',
+            // padding: 20,
+            // borderRadius: 50,
+            // alignItems: 'center',
+            // justifyContent: 'center',
+            // shadowColor: '#E53935',
+            // shadowOffset: { width: 0, height: 4 },
+            // shadowOpacity: 0.4,
+            // shadowRadius: 5,
+            // elevation: 5,
+            // bottom: 50,
+
+            margin: 10,
+            width: 150,
+            backgroundColor: "#E53935",
+            padding: 20,
+            borderRadius: 50,
+            alignItems: "center",
+            justifyContent: "center",
+            shadowColor: "#E53935",
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.4,
+            shadowRadius: 5,
+            elevation: 5,
+        },
+        profileLink: {
+            width: '80%',
+            padding: 20,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderBottomWidth: 1,
+            borderColor: theme.text
+        },
+        grid: {
+            flexDirection: "row",
+            flexWrap: "wrap",
+            justifyContent: "space-between",
+            padding: 30,
+            gap: 12,
+        },
+        item: {
+            width: 100,
+            marginBottom: 12,
+        },
+        image: {
+            width: 100,
+            height: 100,
+            borderRadius: 9999,
         },
     });
 

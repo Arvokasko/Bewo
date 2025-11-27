@@ -5,8 +5,11 @@ import { db, auth } from '../../FirebaseConfig';
 import { doc, getDoc, updateDoc, serverTimestamp, deleteDoc } from "firebase/firestore";
 import { router, useLocalSearchParams } from 'expo-router';
 import UsernameSearch from '@/components/UsernameSearch';
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { stringify } from 'uuid';
 
 export default function ModifyTaskCard() {
+    const { theme, styles } = useThemedStyles();
     const { taskId } = useLocalSearchParams(); // 👈 get doc id from route
     const { sharedState } = useLocalSearchParams(); //  get taskcard sharedstate from route
     const shared = sharedState === "true";
@@ -103,46 +106,66 @@ export default function ModifyTaskCard() {
     };
 
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.backgroundDark }}>
+
             <ScrollView>
                 <View style={{ alignItems: "center" }}>
                     <TextInput
                         value={title}
                         onChangeText={setTitle}
                         placeholder='Title'
-                        style={{ backgroundColor: "grey", width: "80%", borderRadius: 8, padding: 10, margin: 20 }}
+                        style={styles.titleInput}
+                        placeholderTextColor={theme.placeholderColor}
                     />
 
                     <TextInput
                         value={content}
                         onChangeText={setContent}
                         placeholder='Type your thoughts...'
-                        style={{ width: "80%", backgroundColor: "grey", minHeight: 200, borderRadius: 8, textAlignVertical: "top", padding: 10 }}
+                        placeholderTextColor={theme.placeholderColor}
+                        style={styles.contentInput}
                         multiline
                     />
 
-                    {checklist.map((item, index) => (
-                        <View key={index} style={{ flexDirection: "row", alignItems: "center", marginVertical: 6, width: "80%" }}>
-                            <TouchableOpacity onPress={() => toggleChecklist(index)}>
-                                <Text style={{ fontSize: 18 }}>{item.checked ? "☑" : "☐"}</Text>
-                            </TouchableOpacity>
-                            <TextInput
-                                value={item.label}
-                                onChangeText={(text) => handleChecklistChange(text, index)}
-                                placeholder={`Task ${index + 1}`}
-                                style={{ marginLeft: 10, borderBottomWidth: 1, flex: 1, paddingVertical: 4 }}
-                            />
-                            <TouchableOpacity
-                                onPress={() => {
-                                    const updated = checklist.filter((_, i) => i !== index);
-                                    setChecklist(updated.length ? updated : [{ label: "", checked: false }]);
+                    <View style={styles.checklistView}>
+                        {checklist.map((item, index) => (
+                            <View
+                                key={index}
+                                style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    marginVertical: 6,
+                                    width: "80%",
                                 }}
-                                style={{ marginLeft: 10, paddingHorizontal: 8, paddingVertical: 4, backgroundColor: "darkred", borderRadius: 4 }}
                             >
-                                <Text style={{ color: "white" }}>✕</Text>
-                            </TouchableOpacity>
-                        </View>
-                    ))}
+                                {/* Checkbox toggle */}
+                                <TouchableOpacity onPress={() => toggleChecklist(index)}>
+                                    <Text style={{ fontSize: 25, color: theme.text }}>{item.checked ? "☑" : "☐"}</Text>
+                                </TouchableOpacity>
+
+                                {/* Text input */}
+                                <TextInput
+                                    value={item.label}
+                                    onChangeText={(text) => handleChecklistChange(text, index)}
+                                    placeholder={`Task ${index + 1}`}
+                                    placeholderTextColor={theme.placeholderColor}
+                                    style={styles.checkListInput}
+                                />
+
+                                {/* Delete button */}
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        const updated = checklist.filter((_, i) => i !== index);
+                                        setChecklist(updated.length ? updated : [{ label: "", checked: false }]);
+                                    }}
+                                    style={styles.deleteBtn}
+                                >
+                                    <Text style={styles.btnText}>✕</Text>
+                                </TouchableOpacity>
+                            </View>
+                        ))}
+
+                    </View>
 
                     <TouchableOpacity style={styles.bigButton} onPress={() => setShUserVisible(true)}>
                         <Text style={styles.text}>Shared users</Text>
@@ -153,20 +176,37 @@ export default function ModifyTaskCard() {
                     </TouchableOpacity>
 
                     {shared && (
-                        <TouchableOpacity onPress={() => deleteTaskCard(taskId as string)} style={styles.Button}>
+                        <TouchableOpacity onPress={() => deleteTaskCard(taskId as string)} style={styles.logoutButton}>
                             <Text style={styles.text}>Delete</Text>
                         </TouchableOpacity>
                     )}
 
 
-                    {/* Shared users popup */}
-                    <Modal visible={shUserVisible} transparent animationType="fade" onRequestClose={() => setShUserVisible(false)}>
-                        <View style={{ flex: 1, justifyContent: "center", padding: 20, backgroundColor: "#00000050" }}>
-                            <Text style={{ color: "white" }}>Shared taskcard with users</Text>
-                            <UsernameSearch onSelectionChange={setSelectedUsers} />
-                            <TouchableOpacity style={styles.Button} onPress={() => setShUserVisible(false)}>
-                                <Text style={{ textAlign: "center" }}>Okay</Text>
-                            </TouchableOpacity>
+                    {/* Shared users popup panel */}
+                    <Modal
+                        visible={shUserVisible}
+                        transparent
+                        animationType="fade"
+                        onRequestClose={() => setShUserVisible(false)}
+                    >
+                        {/* Overlay to center content */}
+                        <View style={styles.overlay}>
+                            {/* Inner container card */}
+                            <View style={[styles.modalContent, { backgroundColor: theme.backgroundDark }]}>
+                                <Text style={styles.text}>Share this taskcard with any user</Text>
+
+                                {/* UsernameSearch stays the same */}
+                                <UsernameSearch onSelectionChange={setSelectedUsers} />
+
+                                <View style={{ alignItems: "center", marginTop: 20 }}>
+                                    <TouchableOpacity
+                                        style={styles.Button}
+                                        onPress={() => setShUserVisible(false)}
+                                    >
+                                        <Text style={styles.btnText}>Okay</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
                         </View>
                     </Modal>
                 </View>

@@ -1,14 +1,20 @@
-// theme/theme.ts
+// theme/themes.ts
 export const lightTheme = {
     text: "#000000",
-    background: "#F7F7F7",
-    button: "#0170FE",
+    backgroundLight: "#ffffff",
+    backgroundMedium: "#F7F7F7",
+    backgroundDark: "#E7E6E9",
+    accent: "#0170FE",
     shadow: "grey",
+    placeholderColor: "#4d4d4dff",
 };
 
 export const darkTheme = {
     text: "#FFFFFF",
-    background: "#1C1C1E",
-    button: "#0A84FF",
+    backgroundLight: "#323741",
+    backgroundMedium: "#262C35",
+    backgroundDark: "#1B2028",
+    accent: "#0A84FF",
     shadow: "#000000",
+    placeholderColor: "#bebebeff",
 };

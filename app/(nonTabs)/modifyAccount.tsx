@@ -5,12 +5,9 @@ import { auth, db } from '../../FirebaseConfig'
 import { updateProfile, onAuthStateChanged, updatePassword, verifyBeforeUpdateEmail } from 'firebase/auth'
 import { router } from 'expo-router'
 import { doc, setDoc, getDocs, query, where, collection } from "firebase/firestore";
-import { Image } from 'react-native'
+import { Text, TextInput, Image } from 'react-native'
 import { FontAwesome5 } from '@expo/vector-icons';
-
-
-
-import { Text, TextInput, } from '@/components/Themed';
+import { useThemedStyles } from '@/theme/useThemedStyles'
 
 
 
@@ -34,6 +31,8 @@ const pfpMap: Record<string, any> = {
 };
 
 export default function modifyAccount() {
+    const { theme, styles } = useThemedStyles();
+
     const [user, setUser] = useState<any>(null);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -124,33 +123,65 @@ export default function modifyAccount() {
     };
 
     return (
-        <SafeAreaView style={{ alignItems: 'center' }}>
-            <TouchableOpacity onPress={() => router.push('/modifyPfp')}>
-                <FontAwesome5 name="pen" size={20} color="black" solid />
-                <Image
-                    style={{ width: 150, height: 150, borderRadius: 150 }}
-                    source={pfpMap[user?.photoURL || "pfp1"]} // userPfp if user hasnt changed it, default is pfp.png
-                ></Image>
-            </TouchableOpacity>
+        <View style={{ backgroundColor: theme.backgroundDark, flex: 1 }}>
+            <SafeAreaView style={{ alignItems: 'center' }}>
+                <TouchableOpacity onPress={() => router.push('/modifyPfp')}>
+                    <FontAwesome5 name="pen" size={20} color={theme.text} solid />
+                    <Image
+                        style={{ width: 150, height: 150, borderRadius: 150 }}
+                        source={pfpMap[user?.photoURL || "pfp1"]} // userPfp if user hasnt changed it, default is pfp.png
+                    ></Image>
+                </TouchableOpacity>
 
-            <Text style={{ fontSize: 50 }}>Edit profile</Text>
+                <Text style={styles.title}>Edit profile</Text>
 
-            <Text>Username</Text>
-            <TextInput placeholder={user?.displayName ?? '…'} value={username} onChangeText={setUsername} />
+                <Text style={styles.text}>Username</Text>
+                <TextInput
+                    style={styles.titleInput}
+                    placeholder={user?.displayName ?? '…'}
+                    placeholderTextColor={theme.placeholderColor}
+                    value={username}
+                    onChangeText={setUsername}
+                />
 
-            <Text>Current password</Text>
-            <TextInput placeholder="********" value={currentPassword} onChangeText={setCurrentPassword} secureTextEntry />
+                <Text style={styles.text}>Current password</Text>
+                <TextInput
+                    style={styles.titleInput}
+                    placeholder="********"
+                    placeholderTextColor={theme.placeholderColor}
+                    value={currentPassword}
+                    onChangeText={setCurrentPassword}
+                    secureTextEntry
+                />
 
-            <Text>Password</Text>
-            <TextInput placeholder="********" value={password} onChangeText={setPassword} secureTextEntry />
+                <Text style={styles.text}>Password</Text>
+                <TextInput
+                    style={styles.titleInput}
+                    placeholder="********"
+                    placeholderTextColor={theme.placeholderColor}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                />
 
-            <Text>Confirm password</Text>
-            <TextInput placeholder="********" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry />
+                <Text style={styles.text}>Confirm password</Text>
+                <TextInput
+                    style={styles.titleInput}
+                    placeholder="********"
+                    placeholderTextColor={theme.placeholderColor}
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry
+                />
 
-            <TouchableOpacity onPress={updateUserData}>
-                <Text>Save</Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.Button}
+                    onPress={updateUserData}>
+                    <Text style={styles.btnText}>Save</Text>
+                </TouchableOpacity>
 
-        </SafeAreaView>
+            </SafeAreaView>
+
+        </View>
     )
 }

@@ -4,18 +4,23 @@ import React, { useState } from 'react'
 import { StyleSheet } from 'react-native';
 import TaskCard from '@/components/taskCard';
 import { router } from 'expo-router';
+import { useThemedStyles } from '@/theme/useThemedStyles';
 
 
 export default function index() {
+    const { styles, theme } = useThemedStyles();
 
     return (
-        <SafeAreaView>
-            <ScrollView>
-                <View style={{ alignItems: "center", marginBottom: 100 }}>
-                    <TaskCard shared={true} />
-                </View>
+        <View style={{ backgroundColor: theme.backgroundDark }}>
+            <SafeAreaView>
+                <ScrollView>
+                    <View style={{ alignItems: "center", marginBottom: 100 }}>
+                        <TaskCard shared={true} />
+                    </View>
 
-            </ScrollView>
-        </SafeAreaView >
+                </ScrollView>
+
+            </SafeAreaView >
+        </View>
     );
 }

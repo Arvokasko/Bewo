@@ -145,7 +145,7 @@ export default function createCard() {
                             >
                                 {/* Checkbox toggle */}
                                 <TouchableOpacity onPress={() => toggleChecklist(index)}>
-                                    <Text style={{ fontSize: 25 }}>{item.checked ? "☑" : "☐"}</Text>
+                                    <Text style={{ fontSize: 25, color: theme.text }}>{item.checked ? "☑" : "☐"}</Text>
                                 </TouchableOpacity>
 
                                 {/* Text input */}

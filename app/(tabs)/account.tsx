@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { View, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../FirebaseConfig';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Image } from 'react-native';
-
-
-import { Text } from '@/components/Themed';
-
+import { useThemedStyles } from '@/theme/useThemedStyles';
 
 export default function AccountScreen() {
+    const { styles, theme } = useThemedStyles();
 
     // Images that where the users has chosen its own
     const pfpMap: Record<string, any> = {
@@ -47,79 +45,44 @@ export default function AccountScreen() {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={{ backgroundColor: theme.backgroundDark, flex: 1 }}>
 
-            {/* profile info */}
-            <View style={{ alignItems: 'center', flex: 1, top: 100 }}>
-                <Image
-                    style={{ width: 150, height: 150, borderRadius: 150 }}
-                    source={pfpMap[user?.photoURL || "pfp1"]}
-                />
-                <Text style={styles.title}>{user?.displayName ?? '…'}</Text>
-                <Text>{user?.email ?? '…'}</Text>
-            </View>
+            <SafeAreaView style={styles.container}>
+
+                {/* profile info */}
+                <View style={{ alignItems: 'center', flex: 1, top: 100 }}>
+                    <Image
+                        style={{ width: 150, height: 150, borderRadius: 150 }}
+                        source={pfpMap[user?.photoURL || "pfp1"]}
+                    />
+                    <Text style={styles.title}>{user?.displayName ?? '…'}</Text>
+                    <Text style={{ color: theme.text }}>{user?.email ?? '…'}</Text>
+                </View>
 
 
-            {/* accountpage links */}
-            <View style={{ width: "100%", alignItems: "center", flex: 1 }}>
-                <TouchableOpacity
-                    onPress={() => router.push('/(nonTabs)/modifyAccount')}
-                    style={styles.profileLink}
-                >
-                    <Text>Edit profile</Text>
+                {/* accountpage links */}
+                <View style={{ width: "100%", alignItems: "center", flex: 1 }}>
+                    <TouchableOpacity
+                        onPress={() => router.push('/(nonTabs)/modifyAccount')}
+                        style={styles.bigButton}
+                    >
+                        <Text style={styles.text}>Edit profile</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => router.push('/(nonTabs)/colors')}
+                        style={styles.bigButton}
+                    >
+                        <Text style={styles.text}>Colors</Text>
+                    </TouchableOpacity>
+                </View>
+
+
+                {/* sign out button */}
+                <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
+                    <Text style={styles.btnText}>Sign Out</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                    onPress={() => router.push('/(nonTabs)/colors')}
-                    style={styles.profileLink}
-                >
-                    <Text>Colors</Text>
-                </TouchableOpacity>
-            </View>
 
-
-            {/* sign out button */}
-            <TouchableOpacity style={styles.logoutButton} onPress={handleSignOut}>
-                <Text style={styles.btnText}>Sign Out</Text>
-            </TouchableOpacity>
-
-        </SafeAreaView>
+            </SafeAreaView>
+        </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: 28,
-        fontWeight: '800',
-        marginBottom: 5
-    },
-    logoutButton: {
-        width: '80%',
-        backgroundColor: '#E53935',
-        padding: 20,
-        borderRadius: 50,
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: '#E53935',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.4,
-        shadowRadius: 5,
-        elevation: 5,
-        bottom: 50,
-    },
-    btnText: {
-        color: '#FFFFFF',
-        fontSize: 18,
-        fontWeight: '600'
-    },
-    profileLink: {
-        width: '80%',
-        padding: 20,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderBottomWidth: 1,
-    },
-});
