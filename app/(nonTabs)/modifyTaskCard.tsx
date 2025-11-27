@@ -172,12 +172,12 @@ export default function ModifyTaskCard() {
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={handleSubmit} style={styles.Button}>
-                        <Text style={styles.text}>Save</Text>
+                        <Text style={styles.btnText}>Save</Text>
                     </TouchableOpacity>
 
                     {shared && (
                         <TouchableOpacity onPress={() => deleteTaskCard(taskId as string)} style={styles.logoutButton}>
-                            <Text style={styles.text}>Delete</Text>
+                            <Text style={styles.btnText}>Delete</Text>
                         </TouchableOpacity>
                     )}
 

@@ -1,37 +1,55 @@
-import { View, Text, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Appearance, useColorScheme } from 'react-native';
-import { useState } from 'react';
-import * as SystemUI from "expo-system-ui";
+import { ThemePreference, useThemePreference } from '@/components/ThemePreferenceContext';
+import { useColorScheme } from '@/components/useColorScheme';
+import Colors from '@/constants/Colors';
+import * as SystemUI from 'expo-system-ui';
+import React, { useEffect } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useThemedStyles } from '@/theme/useThemedStyles';
 
-export default function colors() {
-    const systemScheme = useColorScheme();
-    const [theme, setTheme] = useState(systemScheme || "light");
+const THEME_OPTIONS: { label: string; value: ThemePreference; description: string }[] = [
+    { label: 'Light', value: 'light', description: 'Always use the light palette' },
+    { label: 'Dark', value: 'dark', description: 'Always use the dark palette' },
+    { label: 'Automatic', value: 'system', description: 'Match your device setting' },
+];
 
+export default function ColorsScreen() {
+    const { theme, styles } = useThemedStyles();
 
-    const toggleTheme = () => {
-        const newTheme = theme === "light" ? "dark" : "light";
-        setTheme(newTheme);
+    const { preference, setPreference } = useThemePreference();
+    const colorScheme = useColorScheme();
+    const palette = Colors[colorScheme];
 
-        // Update system navigation bar color (Android only)
-        SystemUI.setBackgroundColorAsync(newTheme === "dark" ? "#000000" : "#ffffff");
-    };
+    useEffect(() => {
+        SystemUI.setBackgroundColorAsync(colorScheme === 'dark' ? '#000000' : '#ffffff');
+    }, [colorScheme]);
 
     return (
-        <SafeAreaView>
-            <View
-                style={[
-                    { backgroundColor: theme === "dark" ? "#000" : "#fff" },
-                ]}
-            >
-                <Text style={{ color: theme === "dark" ? "#fff" : "#000" }}>
-                    Current theme: {theme}
-                </Text>
-                <TouchableOpacity onPress={toggleTheme} >
-                    <Text>change theme</Text>
-                </TouchableOpacity>
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.backgroundDark }}>
+            <View style={{ flex: 1, padding: 24, gap: 16 }}>
+                <View style={{ gap: 12, marginTop: 12 }}>
+                    {THEME_OPTIONS.map((option) => {
+                        const isActive = preference === option.value;
+                        return (
+                            <TouchableOpacity
+                                key={option.value}
+                                onPress={() => setPreference(option.value)}
+                                style={styles.bigButton}
+                            >
+                                <Text
+                                    style={{
+                                        color: palette.text,
+                                        fontSize: 18,
+                                        fontWeight: '600',
+                                    }}
+                                >
+                                    {option.label}
+                                </Text>
+                            </TouchableOpacity>
+                        );
+                    })}
+                </View>
             </View>
         </SafeAreaView>
-    )
+    );
 }

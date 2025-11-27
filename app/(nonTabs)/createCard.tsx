@@ -1,23 +1,14 @@
-import React from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { TextInput } from 'react-native'
-import { TouchableOpacity } from 'react-native'
-import { ScrollView } from 'react-native'
-import { StyleSheet } from 'react-native'
-import { Modal } from 'react-native'
-import { useState } from 'react'
-import { db } from '../../FirebaseConfig'
-import { doc, setDoc, getDocs, query, where, collection, serverTimestamp } from "firebase/firestore"
-import { Alert } from 'react-native'
-import { v4 as uuidv4 } from 'uuid';
-import { auth } from '../../FirebaseConfig'
-import { router } from 'expo-router'
 import UsernameSearch from '@/components/UsernameSearch'
-import { View } from 'react-native'
+import { router } from 'expo-router'
+import { doc, serverTimestamp, setDoc } from "firebase/firestore"
+import React, { useState } from 'react'
+import { Alert, Modal, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { v4 as uuidv4 } from 'uuid'
+import { auth, db } from '../../FirebaseConfig'
 
 import { Text } from '@/components/Themed'
-import { useColorScheme } from 'react-native';
-import { useThemedStyles } from "../../theme/useThemedStyles";
+import { useThemedStyles } from "../../theme/useThemedStyles"
 
 
 

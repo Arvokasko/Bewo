@@ -16,13 +16,11 @@ export default function TabTwoScreen() {
         <View style={{ backgroundColor: theme.backgroundDark, flex: 1 }}>
 
             <SafeAreaView>
-                <ScrollView>
-                    <View style={{ alignItems: "center", marginBottom: 100 }}>
-                        <TaskCard shared={false} />
-                        {/* cardIndex="1" */}
-                    </View>
+                <View style={{ alignItems: "center", marginBottom: 100 }}>
+                    <TaskCard shared={false} />
+                    {/* cardIndex="1" */}
+                </View>
 
-                </ScrollView>
             </SafeAreaView >
         </View>
     );

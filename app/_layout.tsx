@@ -1,26 +1,17 @@
-import { useEffect, useState } from 'react';
-import { ThemeProvider, DarkTheme, DefaultTheme } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { onAuthStateChanged, User } from 'firebase/auth';
 import { auth } from '@/FirebaseConfig';
+import { ThemePreferenceProvider } from '@/components/ThemePreferenceContext';
 import { useColorScheme } from '@/components/useColorScheme';
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { Stack } from 'expo-router';
+import { User, onAuthStateChanged } from 'firebase/auth';
+import { useEffect, useState } from 'react';
 import { Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import 'react-native-get-random-values';
+import { SafeAreaView } from 'react-native-safe-area-context';
 // import * as Notifications from "expo-notifications";
 
-export default function RootLayout() {
+function NavigationStack({ user }: { user: User | null | undefined }) {
     const colorScheme = useColorScheme();
-    const [user, setUser] = useState<User | null | undefined>(undefined);
-
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-            console.log("Auth state changed:", firebaseUser);
-            setUser(firebaseUser ?? null);
-        });
-        return unsubscribe;
-    }, []);
 
     if (user === undefined) {
         return <SafeAreaView style={{ alignItems: 'center', justifyContent: "center" }}>
@@ -34,5 +25,23 @@ export default function RootLayout() {
                 <Stack.Screen name={user ? '(tabs)' : '(auth)'} />
             </Stack>
         </ThemeProvider>
+    );
+}
+
+export default function RootLayout() {
+    const [user, setUser] = useState<User | null | undefined>(undefined);
+
+    useEffect(() => {
+        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+            console.log("Auth state changed:", firebaseUser);
+            setUser(firebaseUser ?? null);
+        });
+        return unsubscribe;
+    }, []);
+
+    return (
+        <ThemePreferenceProvider>
+            <NavigationStack user={user} />
+        </ThemePreferenceProvider>
     );
 }

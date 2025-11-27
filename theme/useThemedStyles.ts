@@ -1,6 +1,6 @@
 // useThemedStyles.ts
-import TaskCard from "@/components/taskCard";
-import { StyleSheet, useColorScheme } from "react-native";
+import { useColorScheme } from "@/components/useColorScheme";
+import { StyleSheet } from "react-native";
 
 // Theme definitions
 const lightTheme = {
