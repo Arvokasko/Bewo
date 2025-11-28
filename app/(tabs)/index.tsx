@@ -11,7 +11,7 @@ export default function index() {
     const { styles, theme } = useThemedStyles();
 
     return (
-        <View style={{ backgroundColor: theme.backgroundDark }}>
+        <View style={{ backgroundColor: theme.backgroundDark, flex: 1 }}>
             <SafeAreaView>
                 <ScrollView>
                     <View style={{ alignItems: "center", marginBottom: 100 }}>

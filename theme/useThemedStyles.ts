@@ -95,9 +95,7 @@ export const useThemedStyles = () => {
             shadowOpacity: 0.4,
             shadowRadius: 5,
             elevation: 5,
-        }
-        ,
-
+        },
         titleInput: {
             color: theme.text,
             shadowColor: theme.shadow,
@@ -179,6 +177,8 @@ export const useThemedStyles = () => {
         container: {
             flex: 1,
             alignItems: 'center',
+            justifyContent: "center",
+            backgroundColor: theme.backgroundDark,
         },
         title: {
             fontSize: 28,
@@ -187,19 +187,6 @@ export const useThemedStyles = () => {
             color: theme.text,
         },
         logoutButton: {
-            // width: '80%',
-            // backgroundColor: '#E53935',
-            // padding: 20,
-            // borderRadius: 50,
-            // alignItems: 'center',
-            // justifyContent: 'center',
-            // shadowColor: '#E53935',
-            // shadowOffset: { width: 0, height: 4 },
-            // shadowOpacity: 0.4,
-            // shadowRadius: 5,
-            // elevation: 5,
-            // bottom: 50,
-
             margin: 10,
             width: 150,
             backgroundColor: "#E53935",
@@ -236,6 +223,12 @@ export const useThemedStyles = () => {
             width: 100,
             height: 100,
             borderRadius: 9999,
+        },
+        authLink: {
+            color: theme.text,
+            borderBottomWidth: 1,
+            borderColor: theme.text,
+            padding: 5
         },
     });
 

@@ -8,7 +8,10 @@ import { doc, setDoc, getDocs, query, where, collection } from "firebase/firesto
 import { Text, TextInput, Image } from 'react-native'
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useThemedStyles } from '@/theme/useThemedStyles'
-
+import { KeyboardAvoidingView } from 'react-native'
+import { ScrollView } from 'react-native'
+import { Platform } from 'react-native'
+import { useRef } from 'react'
 
 
 // Images that where the users has chosen its own
@@ -40,6 +43,17 @@ export default function modifyAccount() {
     const [confirmPassword, setConfirmPassword] = useState("");
 
     const currentPfp = pfpMap[user?.photoURL || "pfp1"];
+
+
+
+    const scrollRef = useRef<ScrollView>(null);
+
+    const handleFocus = () => {
+        // scroll to bottom when any input is focused
+        scrollRef.current?.scrollToEnd({ animated: true });
+    };
+
+
 
     // declares the user auth
     useEffect(() => {
@@ -123,65 +137,77 @@ export default function modifyAccount() {
     };
 
     return (
-        <View style={{ backgroundColor: theme.backgroundDark, flex: 1 }}>
-            <SafeAreaView style={{ alignItems: 'center' }}>
-                <TouchableOpacity onPress={() => router.push('/modifyPfp')}>
-                    <FontAwesome5 name="pen" size={20} color={theme.text} solid />
-                    <Image
-                        style={{ width: 150, height: 150, borderRadius: 150 }}
-                        source={pfpMap[user?.photoURL || "pfp1"]} // userPfp if user hasnt changed it, default is pfp.png
-                    ></Image>
-                </TouchableOpacity>
+        <View style={{ flex: 1, backgroundColor: theme.backgroundDark }}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0} // adjust if you have a header
+            >
+                <ScrollView
+                    ref={scrollRef}
+                    contentContainerStyle={{ flexGrow: 1, }}
+                    keyboardShouldPersistTaps="handled"
+                >
+                    <SafeAreaView style={{ alignItems: 'center', flex: 1 }}>
+                        <TouchableOpacity onPress={() => router.push('/modifyPfp')}>
+                            <FontAwesome5 name="pen" size={20} color={theme.text} solid />
+                            <Image
+                                style={{ width: 150, height: 150, borderRadius: 150 }}
+                                source={pfpMap[user?.photoURL || "pfp1"]}
+                            />
+                        </TouchableOpacity>
 
-                <Text style={styles.title}>Edit profile</Text>
+                        <Text style={styles.title}>Edit profile</Text>
 
-                <Text style={styles.text}>Username</Text>
-                <TextInput
-                    style={styles.titleInput}
-                    placeholder={user?.displayName ?? '…'}
-                    placeholderTextColor={theme.placeholderColor}
-                    value={username}
-                    onChangeText={setUsername}
-                />
+                        <Text style={styles.text}>Username</Text>
+                        <TextInput
+                            style={styles.titleInput}
+                            placeholder={user?.displayName ?? '…'}
+                            placeholderTextColor={theme.placeholderColor}
+                            value={username}
+                            onChangeText={setUsername}
+                            onFocus={handleFocus}
+                        />
 
-                <Text style={styles.text}>Current password</Text>
-                <TextInput
-                    style={styles.titleInput}
-                    placeholder="********"
-                    placeholderTextColor={theme.placeholderColor}
-                    value={currentPassword}
-                    onChangeText={setCurrentPassword}
-                    secureTextEntry
-                />
+                        <Text style={styles.text}>Current password</Text>
+                        <TextInput
+                            style={styles.titleInput}
+                            placeholder="********"
+                            placeholderTextColor={theme.placeholderColor}
+                            value={currentPassword}
+                            onChangeText={setCurrentPassword}
+                            secureTextEntry
+                            onFocus={handleFocus}
+                        />
 
-                <Text style={styles.text}>Password</Text>
-                <TextInput
-                    style={styles.titleInput}
-                    placeholder="********"
-                    placeholderTextColor={theme.placeholderColor}
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                />
+                        <Text style={styles.text}>Password</Text>
+                        <TextInput
+                            style={styles.titleInput}
+                            placeholder="********"
+                            placeholderTextColor={theme.placeholderColor}
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                            onFocus={handleFocus}
+                        />
 
-                <Text style={styles.text}>Confirm password</Text>
-                <TextInput
-                    style={styles.titleInput}
-                    placeholder="********"
-                    placeholderTextColor={theme.placeholderColor}
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    secureTextEntry
-                />
+                        <Text style={styles.text}>Confirm password</Text>
+                        <TextInput
+                            style={styles.titleInput}
+                            placeholder="********"
+                            placeholderTextColor={theme.placeholderColor}
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                            secureTextEntry
+                            onFocus={handleFocus}
+                        />
 
-                <TouchableOpacity
-                    style={styles.Button}
-                    onPress={updateUserData}>
-                    <Text style={styles.btnText}>Save</Text>
-                </TouchableOpacity>
-
-            </SafeAreaView>
-
+                        <TouchableOpacity style={styles.Button} onPress={updateUserData}>
+                            <Text style={styles.btnText}>Save</Text>
+                        </TouchableOpacity>
+                    </SafeAreaView>
+                </ScrollView>
+            </KeyboardAvoidingView>
         </View>
-    )
+    );
 }

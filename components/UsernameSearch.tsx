@@ -70,7 +70,12 @@ export default function UsernameSearch({ onSelectionChange }: UsernameSearchProp
                 placeholder="Search usernames"
                 value={searchText}
                 onChangeText={setSearchText}
-                style={styles.titleInput}
+                style={[styles.titleInput,
+                {
+                    margin: 0,
+                    marginVertical: 20,
+                    width: "100%"
+                }]}
                 placeholderTextColor={theme.placeholderColor}
             />
             <FlatList
