@@ -8,7 +8,8 @@ A **React Native** application for creating, managing, and sharing task cards am
 - Create, edit, and delete task cards  
 - Share task cards with other users  
 - Real-time updates across devices  
-- User authentication and secure access 
+- User authentication and secure access
+- User changeable clean modern dark and light theme across the whole app
 
 ---
 
