@@ -20,17 +20,3 @@ A **React Native** application for creating, managing, and sharing task cards am
 - **TypeScript** (type safety & maintainability)
 
 ---
-
-## Installation
-```bash
-# Clone the repository
-git clone https://github.com/arvokasko/bewo.git
-
-# Navigate into the project
-cd taskcards-app
-
-# Install dependencies
-npm install
-
-# Start the development server
-npm expo start
