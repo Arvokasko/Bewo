@@ -1,47 +1,40 @@
-import UsernameSearch from '@/components/UsernameSearch'
-import { router } from 'expo-router'
-import { doc, serverTimestamp, setDoc } from "firebase/firestore"
-import React, { useState } from 'react'
-import { Alert, Modal, ScrollView, TextInput, TouchableOpacity, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { v4 as uuidv4 } from 'uuid'
-import { auth, db } from '../../FirebaseConfig'
+import React, { useState } from 'react';
+import { Modal, ScrollView, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { router } from 'expo-router';
+import { doc, serverTimestamp, setDoc } from 'firebase/firestore';
+import { auth, db } from '../../FirebaseConfig';
+import { v4 as uuidv4 } from 'uuid';
+import UsernameSearch from '@/components/UsernameSearch';
+import { Text } from '@/components/Themed';
+import { useThemedStyles } from '../../theme/useThemedStyles';
+import { useError } from '@/components/ErrorModal';
 
-import { Text } from '@/components/Themed'
-import { useThemedStyles } from "../../theme/useThemedStyles"
 
 
 
 export default function createCard() {
-    const { styles, theme } = useThemedStyles();
-    const [userSelected, setUserSelected] = useState<string[]>([]);
+    // add custom error popup for the page
+    const { showError } = useError();
 
-    const [selectedUsernames, setSelectedUsernames] = useState<string[]>([]);
+    // add theme and styles for the page
+    const { theme, styles } = useThemedStyles();
 
+    // sets and calls the selected users from the usernamesearch component
     const [selectedUsers, setSelectedUsers] = useState<{ uid: string; username: string }[]>([]);
 
-    const [notificationData, setNotificationData] = useState("");
-
-
-
-
-
-    // notification and sharedUsers modal state
-    const [notiVisible, setNotiVisible] = useState(false);
+    // sharedUsers modal state
     const [shUserVisible, setShUserVisible] = useState(false);
 
     // taskCard variables
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
 
-
-
-
+    // checklist state
     const [checklist, setChecklist] = useState([{ label: "", checked: false }]);
 
 
     // checklist handling
-
     const handleChecklistChange = (text: string, index: number) => {
         const updated = [...checklist];
         updated[index].label = text;
@@ -62,7 +55,7 @@ export default function createCard() {
     // Check if user has correct content
     const handleSubmit = () => {
         if (!title.trim()) {
-            Alert.alert("Validation Error", "Title is required!");
+            showError("Title is required!");
             return;
         }
         createTaskCard(auth.currentUser?.uid);
@@ -88,12 +81,10 @@ export default function createCard() {
                 updatedAt: serverTimestamp()
             });
 
-            console.log()
-
             router.replace("/(tabs)")
 
         } catch (error: any) {
-            Alert.alert("Error", error.message || "Something went wrong");
+            showError("Something went wrong");
         }
     };
 
@@ -103,6 +94,7 @@ export default function createCard() {
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.backgroundDark }}>
             <ScrollView>
                 <View style={{ alignItems: "center" }}>
+                    {/* card title textinput */}
                     <TextInput
                         style={styles.titleInput}
                         value={title}
@@ -111,7 +103,7 @@ export default function createCard() {
                         placeholderTextColor={theme.placeholderColor}
                     />
 
-
+                    {/* main content textinput */}
                     <TextInput
                         value={content}
                         onChangeText={setContent}
@@ -119,11 +111,11 @@ export default function createCard() {
                         placeholderTextColor={theme.placeholderColor}
                         style={styles.contentInput}
                         multiline={true}
-                    // numberOfLines={200} // could be useful
                     />
 
                     <View style={styles.checklistView}>
 
+                        {/* maps all of the checklist lines that the user has typed on, each line adds a new line below it when typed on */}
                         {checklist.map((item, index) => (
                             <View
                                 key={index}
@@ -163,11 +155,10 @@ export default function createCard() {
 
                     </View>
 
-
+                    {/* bottom buttons of the page */}
                     <TouchableOpacity style={styles.bigButton}
                         onPress={() => setShUserVisible(true)}
                     >
-
                         <Text style={styles.text}>Shared users</Text>
                     </TouchableOpacity>
 
@@ -190,13 +181,11 @@ export default function createCard() {
                         animationType="fade"
                         onRequestClose={() => setShUserVisible(false)}
                     >
-                        {/* Overlay to center content */}
                         <View style={styles.overlay}>
-                            {/* Inner container card */}
                             <View style={[styles.modalContent, { backgroundColor: theme.backgroundDark }]}>
                                 <Text style={styles.text}>Share this taskcard with any user</Text>
 
-                                {/* UsernameSearch stays the same */}
+                                {/* searches usernames for the taskcard that gets saved to the database and the users can access the info of the card themselfs */}
                                 <UsernameSearch onSelectionChange={setSelectedUsers} />
 
                                 <View style={{ alignItems: "center", marginTop: 20 }}>
@@ -210,7 +199,6 @@ export default function createCard() {
                             </View>
                         </View>
                     </Modal>
-
                 </View>
             </ScrollView >
         </SafeAreaView >

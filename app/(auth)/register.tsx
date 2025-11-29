@@ -1,25 +1,33 @@
-// app/(auth)/login.tsx
-import { Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { doc, setDoc, getDocs, query, where, collection } from "firebase/firestore";
-import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState } from 'react';
+import { Text, TextInput, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { auth, db } from '../../FirebaseConfig';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { doc, setDoc, getDocs, query, where, collection } from 'firebase/firestore';
 import { router } from 'expo-router';
 import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useError } from '@/components/ErrorModal';
+
+
 
 export default function RegisterScreen() {
+    // add custom error popup for the page
+    const { showError } = useError();
+
+    // add theme and styles for the page
     const { theme, styles } = useThemedStyles();
 
+    // inputfield values
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    // main register function
     const signUp = async () => {
         try {
             if (password !== confirmPassword) {
-                Alert.alert("Passwords do not match");
+                showError("Passwords do not match");
                 return;
             }
 
@@ -28,7 +36,8 @@ export default function RegisterScreen() {
             const snapshot = await getDocs(q);
 
             if (!username || !snapshot.empty) {
-                Alert.alert("Username already taken");
+                showError("Username already taken!");
+
                 return;
             }
 
@@ -48,13 +57,16 @@ export default function RegisterScreen() {
             // 5. Navigate to app
             router.replace("/(tabs)");
         } catch (error: any) {
-            Alert.alert("Register failed", error.message);
+            showError(error);
+
         }
     };
 
     return (
         <SafeAreaView style={styles.container}>
             <Text style={styles.title}>Register</Text>
+
+            {/* all textinput for the page */}
             <TextInput
                 style={styles.titleInput}
                 placeholderTextColor={theme.placeholderColor}
@@ -85,9 +97,13 @@ export default function RegisterScreen() {
                 onChangeText={setConfirmPassword}
                 secureTextEntry
             />
+
+            {/* call the main create function */}
             <TouchableOpacity style={styles.Button} onPress={signUp}>
-                <Text style={styles.text}>Make Account</Text>
+                <Text style={styles.btnText}>Make Account</Text>
             </TouchableOpacity>
+
+            {/* route to login page if user wants */}
             <TouchableOpacity
                 onPress={() => router.replace('/(auth)/login')}
             >

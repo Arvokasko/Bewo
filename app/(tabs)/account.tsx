@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { signOut } from 'firebase/auth';
 import { auth } from '../../FirebaseConfig';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Image } from 'react-native';
 import { useThemedStyles } from '@/theme/useThemedStyles';
 
 export default function AccountScreen() {
     const { styles, theme } = useThemedStyles();
 
-    // Images that where the users has chosen its own
+    // declare all of the sources for the profile images
     const pfpMap: Record<string, any> = {
         pfp1: require("../../assets/images/profilePictures/pfp.png"),
         pfp2: require("../../assets/images/profilePictures/pfp2.png"),
@@ -31,22 +30,19 @@ export default function AccountScreen() {
 
     const user = auth.currentUser;
 
+    // main signout function
     const handleSignOut = async () => {
         try {
             await signOut(auth);
-            console.log('User signed out');
-            // ✅ optional: instant redirect
+            // after signing out routing to login page
             router.replace('/(auth)/login');
-            // root _layout.tsx will also detect user=null and keep you in (auth)
         } catch (error: any) {
-            console.log(error);
             alert('Logout failed: ' + error.message);
         }
     };
 
     return (
         <View style={{ backgroundColor: theme.backgroundDark, flex: 1 }}>
-
             <SafeAreaView style={styles.container}>
 
                 {/* profile info */}
@@ -60,7 +56,7 @@ export default function AccountScreen() {
                 </View>
 
 
-                {/* accountpage links */}
+                {/* accountpage buttons */}
                 <View style={{ width: "100%", alignItems: "center", flex: 1 }}>
                     <TouchableOpacity
                         onPress={() => router.push('/(nonTabs)/modifyAccount')}

@@ -16,6 +16,8 @@ export default function TabsLayout() {
     return (
         <Tabs screenOptions={{ headerShown: false, tabBarStyle: { backgroundColor: theme.backgroundDark } }}  >
 
+
+            {/* all of the icons for the tabs that are inside the header */}
             <Tabs.Screen name="index" options={{ title: 'Home', tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />, }} />
             <Tabs.Screen name="shared" options={{ title: 'Shared', tabBarIcon: ({ color }) => <TabBarIcon name="list" color={color} />, }} />
             <Tabs.Screen name="account" options={{ title: 'Account', tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />, }} />

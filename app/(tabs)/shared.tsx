@@ -1,15 +1,13 @@
-import { StyleSheet, Text } from 'react-native';
+import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TaskCard from '@/components/taskCard';
-import { View } from 'react-native';
-import { TextInput } from 'react-native';
-import { ScrollView } from 'react-native';
 import { useThemedStyles } from '@/theme/useThemedStyles';
 
 
 
 
 export default function TabTwoScreen() {
+    // add themes and styles from another file
     const { styles, theme } = useThemedStyles();
 
     return (
@@ -17,10 +15,10 @@ export default function TabTwoScreen() {
 
             <SafeAreaView>
                 <View style={{ alignItems: "center", marginBottom: 100 }}>
-                    <TaskCard shared={false} />
-                    {/* cardIndex="1" */}
-                </View>
 
+                    {/* render all of the shared task cards */}
+                    <TaskCard shared={false} />
+                </View>
             </SafeAreaView >
         </View>
     );

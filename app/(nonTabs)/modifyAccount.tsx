@@ -1,20 +1,17 @@
-import { View, TouchableOpacity, Alert } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { auth, db } from '../../FirebaseConfig'
-import { updateProfile, onAuthStateChanged, updatePassword, verifyBeforeUpdateEmail } from 'firebase/auth'
-import { router } from 'expo-router'
-import { doc, setDoc, getDocs, query, where, collection } from "firebase/firestore";
-import { Text, TextInput, Image } from 'react-native'
+import React, { useEffect, useState, useRef } from 'react';
+import { View, TouchableOpacity, Text, TextInput, Image, KeyboardAvoidingView, ScrollView, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { auth, db } from '../../FirebaseConfig';
+import { updateProfile, onAuthStateChanged, updatePassword } from 'firebase/auth';
+import { doc, setDoc, getDocs, query, collection } from 'firebase/firestore';
+import { router } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useThemedStyles } from '@/theme/useThemedStyles'
-import { KeyboardAvoidingView } from 'react-native'
-import { ScrollView } from 'react-native'
-import { Platform } from 'react-native'
-import { useRef } from 'react'
+import { useThemedStyles } from '@/theme/useThemedStyles';
+import { useError } from '@/components/ErrorModal';
 
 
-// Images that where the users has chosen its own
+
+// list of all the Images sources that the user has chosen
 const pfpMap: Record<string, any> = {
     pfp1: require("../../assets/images/profilePictures/pfp.png"),
     pfp2: require("../../assets/images/profilePictures/pfp2.png"),
@@ -34,22 +31,26 @@ const pfpMap: Record<string, any> = {
 };
 
 export default function modifyAccount() {
+    // add custom error and success popup for the page
+    const { showError, showSuccess } = useError();
+
+    // add theme and styles for the page
     const { theme, styles } = useThemedStyles();
 
+    // all of the pages input field values
     const [user, setUser] = useState<any>(null);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [currentPassword, setCurrentPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
-    const currentPfp = pfpMap[user?.photoURL || "pfp1"];
 
 
-
+    // declare scrollref for scrolling out of the way of the keyboard
     const scrollRef = useRef<ScrollView>(null);
 
+    // scroll to bottom when any input is focused
     const handleFocus = () => {
-        // scroll to bottom when any input is focused
         scrollRef.current?.scrollToEnd({ animated: true });
     };
 
@@ -59,34 +60,30 @@ export default function modifyAccount() {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
-
         });
         return unsubscribe;
     }, []);
 
     // main userdata update function
     const updateUserData = async () => {
-
         if (!currentPassword.trim()) {
-            Alert.alert('Fill current password field');
-            return
-        } else {
-            // Proceed with your logic
-            console.log('Submitted:');
-        }
-
-
-        if (!user) return;
-
-        if (password !== confirmPassword) {
-            Alert.alert('Error', 'Passwords do not match!');
+            showError("Fill current password field");
             return;
         }
 
+        // if somehow no user then return
+        if (!user) return;
 
+        // confirm if both of the passwords are the same
+        if (password !== confirmPassword) {
+            showError("Passwords do not match!");
+            return;
+        }
+
+        // try to change the values of the userinfo
         try {
             // Update username if changed
-            if ((username && username !== user.displayName)) {
+            if (username && username !== user.displayName) {
                 await updateUsername(username);
             }
 
@@ -95,57 +92,66 @@ export default function modifyAccount() {
                 await updatePassword(user, password);
             }
 
-            Alert.alert('Success', 'Account updated successfully');
+            // Only show success if no errors were thrown
+            showSuccess("Account updated successfully");
+
+            // route to account page after succesful data update
             router.push('/(tabs)/account');
 
         } catch (err: any) {
-            Alert.alert('Error', err.message);
+            // show custom error popup if error popsup
+            showError(err.message);
         }
     };
 
-
+    // function that changes the username
     const updateUsername = async (newUsername: string) => {
         if (!auth.currentUser) return;
 
-        // Normalize input for uniqueness check
+        // normalizes the username first to check use later
         const normalizedInput = newUsername.trim().toLowerCase();
 
-        // 1. Check if username exists (case-insensitive)
+        // searches the user table of the database
         const q = query(collection(db, "users"));
         const snapshot = await getDocs(q);
 
-        // Loop through and compare normalized values
-        snapshot.forEach(docSnap => {
+        // checks if new username is already taken
+        for (const docSnap of snapshot.docs) {
             const existingUsername = docSnap.data().username;
-            if (existingUsername && existingUsername.toLowerCase() === normalizedInput) {
-                throw new Error("Username already taken");
-            }
-        });
 
-        // 2. Update Auth profile (store original casing for display)
+            // if username is unique and valid else throw error 
+            if (existingUsername && existingUsername.toLowerCase() === normalizedInput) {
+                throw new Error("username already taken");
+            }
+        }
+
+        // updates the users auth displayname
         await updateProfile(auth.currentUser, { displayName: newUsername });
 
-        // 3. Update Firestore user doc (store only original casing)
+        // updates the username to the database table that people can access
         await setDoc(
             doc(db, "users", auth.currentUser.uid),
             {
-                username: newUsername, // only original casing stored
+                username: newUsername,
                 email: auth.currentUser.email,
             },
             { merge: true }
         );
     };
 
+
     return (
         <View style={{ flex: 1, backgroundColor: theme.backgroundDark }}>
+            {/* avoids the view of the keyboard when textinput selected */}
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0} // adjust if you have a header
             >
+                {/* scrolls to the bottom when textinput selected */}
                 <ScrollView
                     ref={scrollRef}
-                    contentContainerStyle={{ flexGrow: 1, }}
+                    contentContainerStyle={{ flexGrow: 1 }}
                     keyboardShouldPersistTaps="handled"
                 >
                     <SafeAreaView style={{ alignItems: 'center', flex: 1 }}>
@@ -159,6 +165,8 @@ export default function modifyAccount() {
 
                         <Text style={styles.title}>Edit profile</Text>
 
+
+                        {/* all of the inputs of the page */}
                         <Text style={styles.text}>Username</Text>
                         <TextInput
                             style={styles.titleInput}
@@ -202,6 +210,7 @@ export default function modifyAccount() {
                             onFocus={handleFocus}
                         />
 
+                        {/* save button that calls the updateuser function */}
                         <TouchableOpacity style={styles.Button} onPress={updateUserData}>
                             <Text style={styles.btnText}>Save</Text>
                         </TouchableOpacity>

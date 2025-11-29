@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { ScrollView, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { ScrollView, Image, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { auth } from "../../FirebaseConfig";
 import { updateProfile, onAuthStateChanged } from "firebase/auth";
-import { View } from "@/components/Themed";
 import { useThemedStyles } from "@/theme/useThemedStyles";
 
-// ✅ Local static assets
+// list of the available static profile pictures
 const pfps = [
     require("../../assets/images/profilePictures/pfp.png"),
     require("../../assets/images/profilePictures/pfp2.png"),
@@ -26,7 +25,7 @@ const pfps = [
     require("../../assets/images/profilePictures/pfp15.png"),
 ];
 
-// ✅ Map identifiers to assets
+// Map identifiers to assets
 const pfpMap: Record<string, any> = {
     pfp1: pfps[0],
     pfp2: pfps[1],
@@ -47,6 +46,7 @@ const pfpMap: Record<string, any> = {
 
 export default function PfpGrid() {
 
+    // add theme and styles for the page
     const { theme, styles } = useThemedStyles();
 
     const [user, setUser] = useState<any>(null);
@@ -58,13 +58,15 @@ export default function PfpGrid() {
         return unsubscribe;
     }, []);
 
-    // ✅ Save identifier instead of file:// URI
+    // save identifiers for the images
     const selectPfp = async (index: number) => {
         try {
+            // checks if user is logged in
             if (auth.currentUser) {
                 await updateProfile(auth.currentUser, {
                     photoURL: `pfp${index + 1}`, // store identifier
                 });
+                // if succesfully changed profile picture, router back to account page
                 router.replace("/(nonTabs)/modifyAccount");
             } else {
                 console.error("No user is signed in.");
@@ -77,6 +79,7 @@ export default function PfpGrid() {
     return (
         <SafeAreaView style={{ backgroundColor: theme.backgroundDark, flex: 1 }}>
             <ScrollView contentContainerStyle={styles.grid}>
+                {/* render all of the available profile pictures to the page */}
                 {pfps.map((pfp, index) => (
                     <TouchableOpacity
                         key={index}
@@ -89,24 +92,5 @@ export default function PfpGrid() {
             </ScrollView>
         </SafeAreaView>
 
-    );
-}
-
-// ✅ Example usage elsewhere (showing user’s profile picture)
-export function UserAvatar({ size = 100 }) {
-    const [user, setUser] = useState<any>(null);
-
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-            setUser(firebaseUser);
-        });
-        return unsubscribe;
-    }, []);
-
-    return (
-        <Image
-            source={pfpMap[user?.photoURL || "pfp1"]} // fallback to pfp1
-            style={{ width: size, height: size, borderRadius: 9999 }}
-        />
     );
 }

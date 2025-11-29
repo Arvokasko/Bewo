@@ -1,13 +1,12 @@
-import { View, Text, TouchableOpacity, TextInput, ScrollView, Modal } from 'react-native'
+import { View, ScrollView } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import React, { useState } from 'react'
-import { StyleSheet } from 'react-native';
+import React from 'react'
 import TaskCard from '@/components/taskCard';
-import { router } from 'expo-router';
 import { useThemedStyles } from '@/theme/useThemedStyles';
 
 
 export default function index() {
+    // add themes and styles from another file
     const { styles, theme } = useThemedStyles();
 
     return (
@@ -15,11 +14,11 @@ export default function index() {
             <SafeAreaView>
                 <ScrollView>
                     <View style={{ alignItems: "center", marginBottom: 100 }}>
+
+                        {/* render all of the owned taskcards */}
                         <TaskCard shared={true} />
                     </View>
-
                 </ScrollView>
-
             </SafeAreaView >
         </View>
     );

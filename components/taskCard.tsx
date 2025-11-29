@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, TextInput, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Modal, TextInput } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { getDocs, query, where, collection, Timestamp } from "firebase/firestore";
+import { query, where, collection } from "firebase/firestore";
 import { auth, db } from '../FirebaseConfig';
 import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -12,13 +12,21 @@ import { useThemedStyles } from "../theme/useThemedStyles";
 
 export default function TaskCard({ shared }: { shared: boolean }) {
 
+    // add custom theme and style to the page
     const { styles, theme } = useThemedStyles();
 
+    // modal visible state
     const [visible, setVisible] = useState(false);
+
+
+    // checkbox state
     const [selectedCard, setSelectedCard] = useState<any>(null);
     const [cards, setCards] = useState<any[]>([]);
 
+    // search bar input
     const [searchQuery, setSearchQuery] = useState("");
+
+    // declaring sorting options
     const [sortOption, setSortOption] = useState<"latest" | "oldest" | "az" | "za">("latest");
 
 
@@ -26,12 +34,15 @@ export default function TaskCard({ shared }: { shared: boolean }) {
 
     const userId = auth.currentUser?.uid;
 
+    // change the taskcard visibility recarding if its called as shared
     const filter = shared ? "ownerId" : "sharedUsers";
 
     useEffect(() => {
+        // if user isnt available return
         if (!auth.currentUser) return;
         if (!userId || !filter) return;
 
+        // change the databse query recarding shared state
         const q = shared
             ? query(
                 collection(db, "taskcards"),
@@ -46,7 +57,6 @@ export default function TaskCard({ shared }: { shared: boolean }) {
             const results: any[] = [];
             snapshot.forEach(doc => results.push({ id: doc.id, ...doc.data() }));
             setCards(results);
-            console.log("Realtime update received");
         }, (error) => {
             console.error("Error with onSnapshot:", error);
         });
@@ -60,13 +70,13 @@ export default function TaskCard({ shared }: { shared: boolean }) {
 
 
 
-
+    // displayed card sorting and filtering
     const filteredAndSortedCards = cards
-        // 🔍 filter by search query
+        // filter by search query
         .filter(card =>
             card.title?.toLowerCase().includes(searchQuery.toLowerCase())
         )
-        // 🔃 sort based on option
+        // sort based on option
         .sort((a, b) => {
             if (sortOption === "latest") {
                 return b.updatedAt?.toMillis() - a.updatedAt?.toMillis();
@@ -84,7 +94,7 @@ export default function TaskCard({ shared }: { shared: boolean }) {
         });
 
 
-
+    // checklist item handling
     const toggleChecklistItem = async (cardId: string, index: number) => {
         try {
             // Find the card in local state
@@ -280,7 +290,6 @@ export default function TaskCard({ shared }: { shared: boolean }) {
                         >
                             <Text style={styles.btnText}>Close</Text>
                         </TouchableOpacity>
-
                     </View>
                 </View>
             </Modal >

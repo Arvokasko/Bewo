@@ -1,26 +1,47 @@
-import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Modal, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet, Modal } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { db, auth } from '../../FirebaseConfig';
+import { db } from '../../FirebaseConfig';
 import { doc, getDoc, updateDoc, serverTimestamp, deleteDoc } from "firebase/firestore";
 import { router, useLocalSearchParams } from 'expo-router';
 import UsernameSearch from '@/components/UsernameSearch';
 import { useThemedStyles } from '@/theme/useThemedStyles';
-import { stringify } from 'uuid';
+import { useError } from '@/components/ErrorModal';
+import { useConfirm } from '@/components/ConfirmModal';
+
 
 export default function ModifyTaskCard() {
+    // add custom error popup for the page
+    const { showError } = useError();
+
+    // add a custom confirm popup for the page
+    const { showConfirm } = useConfirm();
+
+    // add theme and styles for the page
     const { theme, styles } = useThemedStyles();
-    const { taskId } = useLocalSearchParams(); // 👈 get doc id from route
-    const { sharedState } = useLocalSearchParams(); //  get taskcard sharedstate from route
+
+
+    // get id for the taskcard to be modified
+    const { taskId } = useLocalSearchParams();
+
+    //  get taskcard sharedstate from route
+    const { sharedState } = useLocalSearchParams();
+    // declare shared variable
     const shared = sharedState === "true";
+
+
+    // declare the shared users from UsernameSearch.tsx
     const [selectedUsers, setSelectedUsers] = useState<{ uid: string; username: string }[]>([]);
+
+    // declare shared users modal visibility
     const [shUserVisible, setShUserVisible] = useState(false);
 
+    // textinput data
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [checklist, setChecklist] = useState([{ label: "", checked: false }]);
 
-    // 🔹 Load existing data
+    // Load existing data of the taskcard
     useEffect(() => {
         const fetchTask = async () => {
             try {
@@ -33,8 +54,8 @@ export default function ModifyTaskCard() {
                     setChecklist(data.checklist?.length ? data.checklist : [{ label: "", checked: false }]);
                     setSelectedUsers((data.sharedUsers || []).map((uid: string) => ({ uid, username: "" })));
                 }
-            } catch (err: any) {
-                Alert.alert("Error", err.message);
+            } catch (error: any) {
+                showError(error);
             }
         };
         if (taskId) fetchTask();
@@ -57,9 +78,10 @@ export default function ModifyTaskCard() {
         setChecklist(updated);
     };
 
+    // main submit function
     const handleSubmit = async () => {
         if (!title.trim()) {
-            Alert.alert("Validation Error", "Title is required!");
+            showError("Title is required!");
             return;
         }
         try {
@@ -73,41 +95,32 @@ export default function ModifyTaskCard() {
                 updatedAt: serverTimestamp()
             });
             router.replace("/(tabs)");
-        } catch (err: any) {
-            Alert.alert("Error", err.message);
+        } catch (error: any) {
+            showError(error);
         }
     };
 
+    // delete task card function
     const deleteTaskCard = async (taskId: string) => {
-        Alert.alert(
-            "Are you sure?",
-            "This cannot be undone.",
-            [
-                {
-                    text: "Cancel",
-                    style: "cancel", // 👈 closes alert, does nothing
-                },
-                {
-                    text: "Delete",
-                    style: "destructive", // 👈 red button on iOS
-                    onPress: async () => {
-                        try {
-                            const ref = doc(db, "taskcards", taskId);
-                            await deleteDoc(ref);
-                            router.replace("/(tabs)"); // navigate back after deletion
-                        } catch (err: any) {
-                            Alert.alert("Error", err.message || "Failed to delete taskcard");
-                        }
-                    },
-                },
-            ],
-            { cancelable: true }
-        );
+        showConfirm({
+            title: "Are you sure?",
+            message: "This cannot be undone.",
+            confirmText: "Delete",
+            cancelText: "Cancel",
+            onConfirm: async () => {
+                try {
+                    const ref = doc(db, "taskcards", taskId);
+                    await deleteDoc(ref);
+                    router.replace("/(tabs)");
+                } catch (error: any) {
+                    showError("Failed to delete taskcard");
+                }
+            },
+        });
     };
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.backgroundDark }}>
-
             <ScrollView>
                 <View style={{ alignItems: "center" }}>
                     <TextInput
@@ -128,6 +141,8 @@ export default function ModifyTaskCard() {
                     />
 
                     <View style={styles.checklistView}>
+
+                        {/* render all the existing and new checklist lines */}
                         {checklist.map((item, index) => (
                             <View
                                 key={index}
@@ -167,6 +182,8 @@ export default function ModifyTaskCard() {
 
                     </View>
 
+
+                    {/* buttons for the page */}
                     <TouchableOpacity style={styles.bigButton} onPress={() => setShUserVisible(true)}>
                         <Text style={styles.text}>Shared users</Text>
                     </TouchableOpacity>
@@ -175,6 +192,7 @@ export default function ModifyTaskCard() {
                         <Text style={styles.btnText}>Save</Text>
                     </TouchableOpacity>
 
+                    {/* having the button delete recarding if the user is the owner of the taskcard */}
                     {shared && (
                         <TouchableOpacity onPress={() => deleteTaskCard(taskId as string)} style={styles.logoutButton}>
                             <Text style={styles.btnText}>Delete</Text>
@@ -189,13 +207,11 @@ export default function ModifyTaskCard() {
                         animationType="fade"
                         onRequestClose={() => setShUserVisible(false)}
                     >
-                        {/* Overlay to center content */}
                         <View style={styles.overlay}>
-                            {/* Inner container card */}
                             <View style={[styles.modalContent, { backgroundColor: theme.backgroundDark }]}>
                                 <Text style={styles.text}>Share this taskcard with any user</Text>
 
-                                {/* UsernameSearch stays the same */}
+                                {/* search for usernames to add to the shared users */}
                                 <UsernameSearch onSelectionChange={setSelectedUsers} />
 
                                 <View style={{ alignItems: "center", marginTop: 20 }}>
@@ -214,9 +230,3 @@ export default function ModifyTaskCard() {
         </SafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    text: { textAlign: "center" },
-    Button: { width: "50%", padding: 10, backgroundColor: "grey", margin: 10, borderRadius: 8 },
-    bigButton: { width: "80%", padding: 10, backgroundColor: "grey", margin: 10, borderRadius: 8 },
-});

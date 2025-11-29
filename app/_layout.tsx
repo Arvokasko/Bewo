@@ -1,24 +1,31 @@
-import { auth } from '@/FirebaseConfig';
-import { ThemePreferenceProvider } from '@/components/ThemePreferenceContext';
-import { useColorScheme } from '@/components/useColorScheme';
+import { useEffect, useState } from 'react';
+import { Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { User, onAuthStateChanged } from 'firebase/auth';
-import { useEffect, useState } from 'react';
-import { Text } from 'react-native';
+import { auth } from '@/FirebaseConfig';
+import { ThemePreferenceProvider } from '@/components/ThemePreferenceContext';
+import { useColorScheme } from '@/components/useColorScheme';
+import { ErrorProvider } from '@/components/ErrorModal';
+import { ConfirmProvider } from '@/components/ConfirmModal';
 import 'react-native-get-random-values';
-import { SafeAreaView } from 'react-native-safe-area-context';
-// import * as Notifications from "expo-notifications";
+
+
 
 function NavigationStack({ user }: { user: User | null | undefined }) {
+    // get the colorscheme that the user has declared for the app
     const colorScheme = useColorScheme();
 
+    // loading screen when launching the app
     if (user === undefined) {
-        return <SafeAreaView style={{ alignItems: 'center', justifyContent: "center" }}>
-            <Text style={{ fontSize: 50 }}>Loading...</Text>
-        </SafeAreaView>;
+        return (
+            <SafeAreaView style={{ alignItems: 'center', justifyContent: 'center', backgroundColor: "#1B2028", flex: 1 }}>
+            </SafeAreaView>
+        );
     }
 
+    // use theme dynamic header for the bottom navigation of the main pages
     return (
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <Stack screenOptions={{ headerShown: false }}>
@@ -33,7 +40,6 @@ export default function RootLayout() {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-            console.log("Auth state changed:", firebaseUser);
             setUser(firebaseUser ?? null);
         });
         return unsubscribe;
@@ -41,7 +47,11 @@ export default function RootLayout() {
 
     return (
         <ThemePreferenceProvider>
-            <NavigationStack user={user} />
+            <ErrorProvider>
+                <ConfirmProvider>
+                    <NavigationStack user={user} />
+                </ConfirmProvider>
+            </ErrorProvider>
         </ThemePreferenceProvider>
     );
 }

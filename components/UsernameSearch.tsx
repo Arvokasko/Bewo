@@ -3,6 +3,7 @@ import { View, TextInput, FlatList, Text, TouchableOpacity, Alert } from "react-
 import { collection, query, orderBy, startAt, endAt, getDocs } from "firebase/firestore";
 import { db } from "@/FirebaseConfig";
 import { useThemedStyles } from "@/theme/useThemedStyles";
+import { useError } from '@/components/ErrorModal';
 
 
 type User = { uid: string; username: string };
@@ -12,11 +13,17 @@ interface UsernameSearchProps {
 }
 
 export default function UsernameSearch({ onSelectionChange }: UsernameSearchProps) {
+    // adding custom error popup
+    const { showError } = useError();
+    // adding styles and theme from another file
+    const { styles, theme } = useThemedStyles();
+
+
+    // search input value
     const [searchText, setSearchText] = useState("");
     const [results, setResults] = useState<User[]>([]);
     const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
 
-    const { styles, theme } = useThemedStyles();
 
 
     useEffect(() => {
@@ -43,7 +50,7 @@ export default function UsernameSearch({ onSelectionChange }: UsernameSearchProp
                 setResults(users);
             } catch (error) {
                 console.error("Error fetching users:", error);
-                Alert.alert("Error", "Could not fetch users.");
+                showError("Could not fetch users.");
             }
         };
 
